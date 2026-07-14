@@ -1,18 +1,15 @@
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY
-});
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
-      error: "Method not allowed"
+      error: "Method not allowed",
+      detail: "このAPIはPOST専用です。"
     });
   }
 
   try {
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
       return res.status(500).json({
         error: "GEMINI_API_KEY is missing",
         detail: "VercelのEnvironment VariablesにGEMINI_API_KEYが設定されていません。"
@@ -27,7 +24,7 @@ export default async function handler(req, res) {
       email,
       essay,
       wordCount
-    } = req.body;
+    } = req.body || {};
 
     if (!essay || essay.trim().length === 0) {
       return res.status(400).json({
@@ -36,65 +33,104 @@ export default async function handler(req, res) {
       });
     }
 
-const prompt = `
-あなたは日本の高校生を指導する英語**です。
-英検ライティングの答案を、やさしく具体的に添削してください**
+    const prompt = `
+あなたは日本の高校生を指導する英語教師です。
+英検ライティングの答案を、やさしく具体的に添削してください。
+
 【級】
-${level}
+${level || ""}
 
 【形式】
-${taskType}
+${taskType || ""}
 
-**題】
+【問題】
 ${question || ""}
 
 【本文・Eメール】
-$**assage || email || ""}
+${passage || email || ""}
 
 【生徒の解答】
-$**ssay}
+${essay}
 
 【語数】
-${wordCount} words
+${wordCount || ""} words
 
-以**JSON形式だけで返してください。
-Markdownや説明文は不要**。
+以下のJSON形式だけで返してください。
+Markdownや説明文は不要です。
 
 {
   "score": {
-    "content": **
+    "content": 0,
     "organization": 0,
-    "voca**lary": 0,
+    "vocabulary": 0,
     "grammar": 0,
-    "**tal": 0
+    "total": 0
   },
-  "overallComment": **本語で総評",
-  "goodPoints": ["良い点1", **い点2"],
-  "improvementPoints": ["改**1", "改善点2"],
-  "grammarCorrection**: [
+  "overallComment": "日本語で総評",
+  "goodPoints": ["良い点1", "良い点2"],
+  "improvementPoints": ["改善点1", "改善点2"],
+  "grammarCorrections": [
     {
-      "original": "元の表現**
+      "original": "元の表現",
       "corrected": "修正例",
-      **xplanation": "日本語で説明"
+      "explanation": "日本語で説明"
     }
   ],
-**"improvedAnswer": "改善後の英文例",
-  "n**tAdvice": "次回へのアドバイス"
+  "improvedAnswer": "改善後の英文例",
+  "nextAdvice": "次回へのアドバイス"
 }
 
 採点基準：
-- **論述と要約は16点満点を意識する
-- Eメールは9点満点を意識する** 厳しすぎず、授業で使える実用的なコメントにする
-- 文法修正は最**つまで
+- 意見論述と要約は16点満点を意識する
+- Eメールは9点満点を意識する
+- 厳しすぎず、授業で使える実用的なコメントにする
+- 文法修正は最大3つまで
 - 生徒が次に何を直せばよいか分かるようにする
 `;
-``**
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt
-    });
 
-    let text = response.text || "";
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
+
+    const rawText = await geminiResponse.text();
+
+    if (!geminiResponse.ok) {
+      return res.status(500).json({
+        error: "Gemini API request failed",
+        detail: rawText
+      });
+    }
+
+    let geminiData;
+
+    try {
+      geminiData = JSON.parse(rawText);
+    } catch {
+      return res.status(500).json({
+        error: "Gemini response was not JSON",
+        detail: rawText
+      });
+    }
+
+    let text =
+      geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     text = text
       .replace(/```json/g, "")
@@ -121,11 +157,9 @@ Markdownや説明文は不要**。
       feedback
     });
   } catch (error) {
-    console.error("Gemini feedback error:", error);
-
     return res.status(500).json({
       error: "Gemini feedback failed",
-      detail: error.message
+      detail: error.message || String(error)
     });
   }
 }
