@@ -191,24 +191,51 @@ export default function App() {
     setAiFeedback(null);
   }
 
-  function saveResult() {
-    const item = {
-      id: Date.now(),
-      time: new Date().toLocaleString("ja-JP"),
-      className: className || "未入力",
-      studentName: studentName || "未入力",
-      level: levelLabels[level],
-      taskType: taskLabels[selectedTask.type],
-      topic: selectedTask.title,
-      score: analysis.total,
-      maxScore: analysis.maxTotal,
-      words: analysis.wordCount,
-      essay,
-      aiComment: aiFeedback?.overallComment || ""
-    };
+ function saveResult() {
+  const grammarCorrectionsText =
+    aiFeedback?.grammarCorrections && aiFeedback.grammarCorrections.length > 0
+      ? aiFeedback.grammarCorrections
+          .map((item, index) => {
+            return `${index + 1}. 元の表現: ${item.original || ""} / 修正例: ${
+              item.corrected || ""
+            } / 説明: ${item.explanation || ""}`;
+          })
+          .join(" | ")
+      : "";
 
-    setHistory([item, ...history].slice(0, 50));
-  }
+  const item = {
+    id: Date.now(),
+    time: new Date().toLocaleString("ja-JP"),
+    className: className || "未入力",
+    studentName: studentName || "未入力",
+    level: levelLabels[level],
+    taskType: taskLabels[selectedTask.type],
+    topic: selectedTask.title,
+    score: analysis.total,
+    maxScore: analysis.maxTotal,
+    words: analysis.wordCount,
+    essay,
+
+    aiScoreTotal: aiFeedback?.score?.total ?? "",
+    aiScoreContent: aiFeedback?.score?.content ?? "",
+    aiScoreOrganization: aiFeedback?.score?.organization ?? "",
+    aiScoreVocabulary: aiFeedback?.score?.vocabulary ?? "",
+    aiScoreGrammar: aiFeedback?.score?.grammar ?? "",
+
+    aiComment: aiFeedback?.overallComment || "",
+    aiGoodPoints: aiFeedback?.goodPoints
+      ? aiFeedback.goodPoints.join(" / ")
+      : "",
+    aiImprovementPoints: aiFeedback?.improvementPoints
+      ? aiFeedback.improvementPoints.join(" / ")
+      : "",
+    aiGrammarCorrections: grammarCorrectionsText,
+    aiImprovedAnswer: aiFeedback?.improvedAnswer || "",
+    aiNextAdvice: aiFeedback?.nextAdvice || ""
+  };
+
+  setHistory([item, ...history].slice(0, 50));
+}
 
   function downloadCsv() {
     const header = [
