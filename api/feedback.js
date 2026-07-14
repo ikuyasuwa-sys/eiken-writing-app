@@ -1,7 +1,7 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY
 });
 
 export default async function handler(req, res) {
@@ -12,6 +12,13 @@ export default async function handler(req, res) {
   }
 
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({
+        error: "GEMINI_API_KEY is missing",
+        detail: "VercelのEnvironment VariablesにGEMINI_API_KEYが設定されていません。"
+      });
+    }
+
     const {
       level,
       taskType,
@@ -24,7 +31,8 @@ export default async function handler(req, res) {
 
     if (!essay || essay.trim().length === 0) {
       return res.status(400).json({
-        error: "Essay is required"
+        error: "Essay is required",
+        detail: "英作文が入力されていません。"
       });
     }
 
@@ -51,7 +59,7 @@ ${essay}
 ${wordCount} words
 
 以下のJSON形式だけで返してください。
-説明文やMarkdownは不要です。
+Markdownや説明文は不要です。
 
 {
   "score": {
@@ -79,16 +87,16 @@ ${wordCount} words
 - 意見論述と要約は16点満点を意識する
 - Eメールは9点満点を意識する
 - 厳しすぎず、授業で使える実用的なコメントにする
+- 文法修正は最大3つまで
 - 生徒が次に何を直せばよいか分かるようにする
-- 文法修正は多すぎず、重要なものを最大3つまでにする
 `;
 
-    const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-      input: prompt
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt
     });
 
-    let text = response.output_text || "";
+    let text = response.text || "";
 
     text = text
       .replace(/```json/g, "")
@@ -102,7 +110,7 @@ ${wordCount} words
     } catch {
       feedback = {
         score: null,
-        overallComment: text || "AIからの応答を解析できませんでした。",
+        overallComment: text || "Geminiからの応答を解析できませんでした。",
         goodPoints: [],
         improvementPoints: [],
         grammarCorrections: [],
@@ -115,10 +123,10 @@ ${wordCount} words
       feedback
     });
   } catch (error) {
-    console.error(error);
+    console.error("Gemini feedback error:", error);
 
     return res.status(500).json({
-      error: "AI feedback failed",
+      error: "Gemini feedback failed",
       detail: error.message
     });
   }
