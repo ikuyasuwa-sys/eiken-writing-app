@@ -8,8 +8,9 @@
     "@vitejs/plugin-react": "latest",
     "vite": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
     "openai": "latest"
   },
   "devDependencies": {}
 }
+``
