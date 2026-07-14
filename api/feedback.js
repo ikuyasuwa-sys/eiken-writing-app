@@ -6,14 +6,26 @@ const client = new OpenAI({
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
   }
 
   try {
-    const { level, taskType, question, passage, email, essay, wordCount } = req.body;
+    const {
+      level,
+      taskType,
+      question,
+      passage,
+      email,
+      essay,
+      wordCount
+    } = req.body;
 
     if (!essay || essay.trim().length === 0) {
-      return res.status(400).json({ error: "Essay is required" });
+      return res.status(400).json({
+        error: "Essay is required"
+      });
     }
 
     const prompt = `
@@ -39,6 +51,7 @@ ${essay}
 ${wordCount} words
 
 以下のJSON形式だけで返してください。
+説明文やMarkdownは不要です。
 
 {
   "score": {
@@ -62,8 +75,12 @@ ${wordCount} words
   "nextAdvice": "次回へのアドバイス"
 }
 
-採点は、意見論述・要約は16点満点、Eメールは9点満点を意識してください。
-厳しすぎず、授業で使える実用的なコメントにしてください。
+採点基準：
+- 意見論述と要約は16点満点を意識する
+- Eメールは9点満点を意識する
+- 厳しすぎず、授業で使える実用的なコメントにする
+- 生徒が次に何を直せばよいか分かるようにする
+- 文法修正は多すぎず、重要なものを最大3つまでにする
 `;
 
     const response = await client.responses.create({
@@ -71,14 +88,21 @@ ${wordCount} words
       input: prompt
     });
 
-    const text = response.output_text;
+    let text = response.output_text || "";
+
+    text = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
     let feedback;
+
     try {
       feedback = JSON.parse(text);
     } catch {
       feedback = {
-        overallComment: text,
+        score: null,
+        overallComment: text || "AIからの応答を解析できませんでした。",
         goodPoints: [],
         improvementPoints: [],
         grammarCorrections: [],
@@ -87,9 +111,12 @@ ${wordCount} words
       };
     }
 
-    return res.status(200).json({ feedback });
+    return res.status(200).json({
+      feedback
+    });
   } catch (error) {
     console.error(error);
+
     return res.status(500).json({
       error: "AI feedback failed",
       detail: error.message
