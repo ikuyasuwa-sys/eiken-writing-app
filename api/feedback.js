@@ -37,60 +37,58 @@ export default async function handler(req, res) {
     }
 
 const prompt = `
-あなたは日本の高校生を指導する英語教師です。
-英検ライティングの答案を、やさしく具体的に添削してください。
-
+あなたは日本の高校生を指導する英語**です。
+英検ライティングの答案を、やさしく具体的に添削してください**
 【級】
 ${level}
 
 【形式】
 ${taskType}
 
-【問題】
+**題】
 ${question || ""}
 
 【本文・Eメール】
-${passage || email || ""}
+$**assage || email || ""}
 
 【生徒の解答】
-${essay}
+$**ssay}
 
 【語数】
 ${wordCount} words
 
-以下のJSON形式だけで返してください。
-Markdownや説明文は不要です。
+以**JSON形式だけで返してください。
+Markdownや説明文は不要**。
 
 {
   "score": {
-    "content": 0,
+    "content": **
     "organization": 0,
-    "vocabulary": 0,
+    "voca**lary": 0,
     "grammar": 0,
-    "total": 0
+    "**tal": 0
   },
-  "overallComment": "日本語で総評",
-  "goodPoints": ["良い点1", "良い点2"],
-  "improvementPoints": ["改善点1", "改善点2"],
-  "grammarCorrections": [
+  "overallComment": **本語で総評",
+  "goodPoints": ["良い点1", **い点2"],
+  "improvementPoints": ["改**1", "改善点2"],
+  "grammarCorrection**: [
     {
-      "original": "元の表現",
+      "original": "元の表現**
       "corrected": "修正例",
-      "explanation": "日本語で説明"
+      **xplanation": "日本語で説明"
     }
   ],
-  "improvedAnswer": "改善後の英文例",
-  "nextAdvice": "次回へのアドバイス"
+**"improvedAnswer": "改善後の英文例",
+  "n**tAdvice": "次回へのアドバイス"
 }
 
 採点基準：
-- 意見論述と要約は16点満点を意識する
-- Eメールは9点満点を意識する
-- 厳しすぎず、授業で使える実用的なコメントにする
-- 文法修正は最大3つまで
+- **論述と要約は16点満点を意識する
+- Eメールは9点満点を意識する** 厳しすぎず、授業で使える実用的なコメントにする
+- 文法修正は最**つまで
 - 生徒が次に何を直せばよいか分かるようにする
 `;
-
+``**
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt
