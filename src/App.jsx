@@ -134,24 +134,45 @@ function feedback(key, score, max, type) {
 function csvEscape(value) { return `"${String(value).replaceAll('"','""')}"`; }
 
 export default function App() {
-  const [level, setLevel] = useState('grade3');
-  const [taskId, setTaskId] = useState('g3-email-1');
-  const [studentName, setStudentName] = useState('');
-  const [className, setClassName] = useState('');
+  const [level, setLevel] = useState("grade3");
+  const [taskId, setTaskId] = useState("g3-email-1");
+  const [studentName, setStudentName] = useState("");
+  const [className, setClassName] = useState("");
   const [essay, setEssay] = useState(tasks.grade3[0].model);
   const [showModel, setShowModel] = useState(false);
   const [history, setHistory] = useState([]);
+
   const [aiFeedback, setAiFeedback] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
+
   const taskList = tasks[level];
-  const selectedTask = taskList.find(t => t.id === taskId) || taskList[0];
-  const analysis = useMemo(() => analyzeEssay(essay, selectedTask, level), [essay, selectedTask, level]);
-  const wordStatus = analysis.wordCount < selectedTask.targetMin ? '少なめ' : analysis.wordCount > selectedTask.targetMax ? '多め' : '適正';
-  const rubric = selectedTask.type === 'email' ? [
-    ['content', '内容', 3], ['vocabulary', '語彙', 3], ['grammar', '文法', 3]
-  ] : [
-    ['content', '内容', 4], ['organization', '構成', 4], ['vocabulary', '語彙', 4], ['grammar', '文法', 4]
-  ];
+  const selectedTask = taskList.find((t) => t.id === taskId) || taskList[0];
+
+  const analysis = useMemo(
+    () => analyzeEssay(essay, selectedTask, level),
+    [essay, selectedTask, level]
+  );
+
+  const wordStatus =
+    analysis.wordCount < selectedTask.targetMin
+      ? "少なめ"
+      : analysis.wordCount > selectedTask.targetMax
+      ? "多め"
+      : "適正";
+
+  const rubric =
+    selectedTask.type === "email"
+      ? [
+          ["content", "内容", 3],
+          ["vocabulary", "語彙", 3],
+          ["grammar", "文法", 3]
+        ]
+      : [
+          ["content", "内容", 4],
+          ["organization", "構成", 4],
+          ["vocabulary", "語彙", 4],
+          ["grammar", "文法", 4]
+        ];
 
   function changeLevel(nextLevel) {
     setLevel(nextLevel);
@@ -159,72 +180,123 @@ export default function App() {
     setTaskId(firstTask.id);
     setEssay(firstTask.model);
     setShowModel(false);
+    setAiFeedback(null);
   }
 
   function changeTask(nextTaskId) {
-    const nextTask = taskList.find(t => t.id === nextTaskId) || taskList[0];
+    const nextTask = taskList.find((t) => t.id === nextTaskId) || taskList[0];
     setTaskId(nextTask.id);
     setEssay(nextTask.model);
     setShowModel(false);
+    setAiFeedback(null);
   }
 
   function saveResult() {
     const item = {
-      id: Date.now(), time: new Date().toLocaleString('ja-JP'), className: className || '未入力',
-      studentName: studentName || '未入力', level: levelLabels[level], taskType: taskLabels[selectedTask.type],
-      topic: selectedTask.title, score: analysis.total, maxScore: analysis.maxTotal, words: analysis.wordCount, essay
+      id: Date.now(),
+      time: new Date().toLocaleString("ja-JP"),
+      className: className || "未入力",
+      studentName: studentName || "未入力",
+      level: levelLabels[level],
+      taskType: taskLabels[selectedTask.type],
+      topic: selectedTask.title,
+      score: analysis.total,
+      maxScore: analysis.maxTotal,
+      words: analysis.wordCount,
+      essay,
+      aiComment: aiFeedback?.overallComment || ""
     };
+
     setHistory([item, ...history].slice(0, 50));
   }
 
   function downloadCsv() {
-    async function getAiFeedback() {
-  setAiLoading(true);
-  setAiFeedback(null);
+    const header = [
+      "日時",
+      "クラス",
+      "生徒名",
+      "級",
+      "形式",
+      "問題",
+      "得点",
+      "満点",
+      "語数",
+      "英文",
+      "AI総評"
+    ];
 
-  try {
-    const response = await fetch("/api/feedback", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        level: levelLabels[level],
-        taskType: taskLabels[selectedTask.type],
-        question: selectedTask.question,
-        passage: selectedTask.passage,
-        email: selectedTask.email,
-        essay,
-        wordCount: analysis.wordCount
-      })
+    const rows = history.map((h) => [
+      h.time,
+      h.className,
+      h.studentName,
+      h.level,
+      h.taskType,
+      h.topic,
+      h.score,
+      h.maxScore,
+      h.words,
+      h.essay,
+      h.aiComment || ""
+    ]);
+
+    const csv = [header, ...rows]
+      .map((row) => row.map(csvEscape).join(","))
+      .join("\n");
+
+    const blob = new Blob(["\ufeff" + csv], {
+      type: "text/csv;charset=utf-8;"
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "AI添削に失敗しました");
-    }
-
-    setAiFeedback(data.feedback);
-  } catch (error) {
-    setAiFeedback({
-      overallComment: "AI添削中にエラーが発生しました。時間をおいてもう一度試してください。",
-      detail: error.message
-    });
-  } finally {
-    setAiLoading(false);
-  }
-}
-    const header = ['日時','クラス','生徒名','級','形式','問題','得点','満点','語数','英文'];
-    const rows = history.map(h => [h.time,h.className,h.studentName,h.level,h.taskType,h.topic,h.score,h.maxScore,h.words,h.essay]);
-    const csv = [header, ...rows].map(row => row.map(csvEscape).join(',')).join('\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'eiken-writing-results.csv';
+    a.download = "eiken-writing-results.csv";
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  async function getAiFeedback() {
+    setAiLoading(true);
+    setAiFeedback(null);
+
+    try {
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          level: levelLabels[level],
+          taskType: taskLabels[selectedTask.type],
+          question: selectedTask.question,
+          passage: selectedTask.passage,
+          email: selectedTask.email,
+          essay,
+          wordCount: analysis.wordCount
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "AI添削に失敗しました");
+      }
+
+      setAiFeedback(data.feedback);
+    } catch (error) {
+      setAiFeedback({
+        overallComment:
+          "AI添削中にエラーが発生しました。時間をおいてもう一度試してください。",
+        detail: error.message,
+        goodPoints: [],
+        improvementPoints: [],
+        grammarCorrections: [],
+        improvedAnswer: "",
+        nextAdvice: ""
+      });
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   return (
@@ -233,178 +305,333 @@ export default function App() {
         <div>
           <p className="eyebrow">英検ライティング添削アプリ</p>
           <h1>3級〜準1級：問題バンク版</h1>
-          <p>各級6問搭載。Eメール・意見論述・要約に対応しています。</p>
+          <p>
+            各級6問搭載。Eメール・意見論述・要約に対応しています。
+            AI添削機能も利用できます。
+          </p>
         </div>
+
         <div className="levelButtons">
-          {levels.map(lv => <button key={lv} className={level === lv ? 'active' : ''} onClick={() => changeLevel(lv)}>{levelLabels[lv]}</button>)}
+          {levels.map((lv) => (
+            <button
+              key={lv}
+              className={level === lv ? "active" : ""}
+              onClick={() => changeLevel(lv)}
+            >
+              {levelLabels[lv]}
+            </button>
+          ))}
         </div>
       </section>
 
       <div className="layout">
         <section className="mainColumn">
           <div className="card grid2">
-            <label>生徒名<input value={studentName} onChange={e => setStudentName(e.target.value)} placeholder="例：山田 太郎" /></label>
-            <label>クラス<input value={className} onChange={e => setClassName(e.target.value)} placeholder="例：2年5組" /></label>
+            <label>
+              生徒名
+              <input
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="例：山田 太郎"
+              />
+            </label>
+
+            <label>
+              クラス
+              <input
+                value={className}
+                onChange={(e) => setClassName(e.target.value)}
+                placeholder="例：2年5組"
+              />
+            </label>
           </div>
 
           <section className="card">
             <h2>問題選択</h2>
-            <select value={taskId} onChange={e => changeTask(e.target.value)}>
-              {taskList.map(t => <option key={t.id} value={t.id}>{t.title} / {taskLabels[t.type]}</option>)}
+
+            <select
+              value={taskId}
+              onChange={(e) => changeTask(e.target.value)}
+            >
+              {taskList.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.title} / {taskLabels[t.type]}
+                </option>
+              ))}
             </select>
+
             <div className="problemBox">
               <div className="chips">
-                <span>{levelLabels[level]}</span><span>{taskLabels[selectedTask.type]}</span><span>語数：{selectedTask.wordRange}</span><span>この級の問題数：{taskList.length}問</span>
+                <span>{levelLabels[level]}</span>
+                <span>{taskLabels[selectedTask.type]}</span>
+                <span>語数：{selectedTask.wordRange}</span>
+                <span>この級の問題数：{taskList.length}問</span>
               </div>
+
               <h3>QUESTION</h3>
               <p className="question">{selectedTask.question}</p>
-              {selectedTask.email && <Prompt title="E-mail" text={selectedTask.email} />}
-              {selectedTask.passage && <Prompt title="Passage" text={selectedTask.passage} />}
-              <div className="points">{selectedTask.points.map(p => <span key={p}>POINT: {p}</span>)}</div>
+
+              {selectedTask.email && (
+                <Prompt title="E-mail" text={selectedTask.email} />
+              )}
+
+              {selectedTask.passage && (
+                <Prompt title="Passage" text={selectedTask.passage} />
+              )}
+
+              <div className="points">
+                {selectedTask.points.map((p) => (
+                  <span key={p}>POINT: {p}</span>
+                ))}
+              </div>
             </div>
           </section>
 
           <section className="card">
-            <div className="rowBetween"><h2>解答入力</h2><strong>{analysis.wordCount} words / {wordStatus}</strong></div>
-            <textarea value={essay} onChange={e => setEssay(e.target.value)} placeholder="Write your answer here..." />
+            <div className="rowBetween">
+              <h2>解答入力</h2>
+              <strong>
+                {analysis.wordCount} words / {wordStatus}
+              </strong>
+            </div>
+
+            <textarea
+              value={essay}
+              onChange={(e) => setEssay(e.target.value)}
+              placeholder="Write your answer here..."
+            />
+
             <div className="actions">
-           <button onClick={saveResult}>添削結果を保存</button>
+              <button onClick={saveResult}>添削結果を保存</button>
 
-           <button className="secondary" onClick={() => setShowModel(!showModel)}>
-    模範解答を{showModel ? '隠す' : '表示'}
-  </button>
+              <button
+                className="secondary"
+                onClick={() => setShowModel(!showModel)}
+              >
+                模範解答を{showModel ? "隠す" : "表示"}
+              </button>
 
-  <button className="success" onClick={downloadCsv} disabled={history.length === 0}>
-    CSV出力
-  </button>
+              <button
+                className="success"
+                onClick={downloadCsv}
+                disabled={history.length === 0}
+              >
+                CSV出力
+              </button>
 
-  <button onClick={getAiFeedback} disabled={aiLoading}>
-    {aiLoading ? "AI添削中..." : "AIで詳しく添削"}
-  </button>
-</div>
-            {showModel && <div className="model"><h3>模範解答例</h3><p>{selectedTask.model}</p></div>}
+              <button onClick={getAiFeedback} disabled={aiLoading}>
+                {aiLoading ? "AI添削中..." : "AIで詳しく添削"}
+              </button>
+            </div>
+
+            {showModel && (
+              <div className="model">
+                <h3>模範解答例</h3>
+                <p>{selectedTask.model}</p>
+              </div>
+            )}
+
             {aiFeedback && (
-  <div className="model">
-    <h3>AI添削結果</h3>
+              <div className="model">
+                <h3>AI添削結果</h3>
 
-    {aiFeedback.score && (
-      <p>
-        <strong>AIスコア：</strong>
-        {aiFeedback.score.total}点
-      </p>
-    )}
+                {aiFeedback.score && (
+                  <p>
+                    <strong>AIスコア：</strong>
+                    {aiFeedback.score.total}点
+                  </p>
+                )}
 
-    {aiFeedback.overallComment && (
-      <p>
-        <strong>総評：</strong>
-        {aiFeedback.overallComment}
-      </p>
-    )}
+                {aiFeedback.overallComment && (
+                  <p>
+                    <strong>総評：</strong>
+                    {aiFeedback.overallComment}
+                  </p>
+                )}
 
-    {aiFeedback.goodPoints && aiFeedback.goodPoints.length > 0 && (
-      <>
-        <h4>良い点</h4>
-        <ul>
-          {aiFeedback.goodPoints.map((point, index) => (
-            <li key={index}>{point}</li>
-          ))}
-        </ul>
-      </>
-    )}
+                {aiFeedback.goodPoints &&
+                  aiFeedback.goodPoints.length > 0 && (
+                    <>
+                      <h4>良い点</h4>
+                      <ul>
+                        {aiFeedback.goodPoints.map((point, index) => (
+                          <li key={index}>{point}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
 
-    {aiFeedback.improvementPoints && aiFeedback.improvementPoints.length > 0 && (
-      <>
-        <h4>改善点</h4>
-        <ul>
-          {aiFeedback.improvementPoints.map((point, index) => (
-            <li key={index}>{point}</li>
-          ))}
-        </ul>
-      </>
-    )}
+                {aiFeedback.improvementPoints &&
+                  aiFeedback.improvementPoints.length > 0 && (
+                    <>
+                      <h4>改善点</h4>
+                      <ul>
+                        {aiFeedback.improvementPoints.map((point, index) => (
+                          <li key={index}>{point}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
 
-    {aiFeedback.grammarCorrections && aiFeedback.grammarCorrections.length > 0 && (
-      <>
-        <h4>文法・表現の修正</h4>
-        {aiFeedback.grammarCorrections.map((item, index) => (
-          <div key={index} className="history">
-            <p><strong>元の表現：</strong>{item.original}</p>
-            <p><strong>修正例：</strong>{item.corrected}</p>
-            <p><strong>説明：</strong>{item.explanation}</p>
-          </div>
-        ))}
-      </>
-    )}
+                {aiFeedback.grammarCorrections &&
+                  aiFeedback.grammarCorrections.length > 0 && (
+                    <>
+                      <h4>文法・表現の修正</h4>
+                      {aiFeedback.grammarCorrections.map((item, index) => (
+                        <div key={index} className="history">
+                          <p>
+                            <strong>元の表現：</strong>
+                            {item.original}
+                          </p>
+                          <p>
+                            <strong>修正例：</strong>
+                            {item.corrected}
+                          </p>
+                          <p>
+                            <strong>説明：</strong>
+                            {item.explanation}
+                          </p>
+                        </div>
+                      ))}
+                    </>
+                  )}
 
-    {aiFeedback.improvedAnswer && (
-      <>
-        <h4>改善後の英文例</h4>
-        <p>{aiFeedback.improvedAnswer}</p>
-      </>
-    )}
+                {aiFeedback.improvedAnswer && (
+                  <>
+                    <h4>改善後の英文例</h4>
+                    <p>{aiFeedback.improvedAnswer}</p>
+                  </>
+                )}
 
-    {aiFeedback.nextAdvice && (
-      <p>
-        <strong>次回へのアドバイス：</strong>
-        {aiFeedback.nextAdvice}
-      </p>
-    )}
+                {aiFeedback.nextAdvice && (
+                  <p>
+                    <strong>次回へのアドバイス：</strong>
+                    {aiFeedback.nextAdvice}
+                  </p>
+                )}
 
-    {aiFeedback.detail && (
-      <p>
-        <strong>詳細：</strong>
-        {aiFeedback.detail}
-      </p>
-    )}
-  </div>
-)}
+                {aiFeedback.detail && (
+                  <p>
+                    <strong>詳細：</strong>
+                    {aiFeedback.detail}
+                  </p>
+                )}
+              </div>
+            )}
           </section>
         </section>
 
         <aside className="sideColumn">
           <section className="scoreCard">
             <p>総合スコア</p>
-            <div><strong>{analysis.total}</strong><span>/ {analysis.maxTotal}</span></div>
+            <div>
+              <strong>{analysis.total}</strong>
+              <span>/ {analysis.maxTotal}</span>
+            </div>
             <progress value={analysis.total} max={analysis.maxTotal}></progress>
           </section>
 
           <section className="card">
             <h2>チェック項目</h2>
-            {selectedTask.type === 'opinion' && <>
-              <Check ok={analysis.checks.hasOpinion} text="自分の意見がある" />
-              <Check ok={analysis.checks.hasFirst} text="First が使えている" />
-              <Check ok={analysis.checks.hasSecond} text="Second / Also が使えている" />
-              <Check ok={analysis.checks.hasConclusion} text="結論表現がある" />
-            </>}
-            {selectedTask.type === 'email' && <>
-              <Check ok={analysis.wordCount > 0} text="返信を書いている" />
-              <Check ok={analysis.checks.hasQuestion} text="疑問文がある" />
-              <Check ok={selectedTask.id.includes('g3') ? true : analysis.checks.hasTwoQuestions} text="必要な質問数を意識している" />
-            </>}
-            {selectedTask.type === 'summary' && <>
-              <Check ok={analysis.wordCount > 0} text="要約を書いている" />
-              <Check ok={analysis.checks.sentenceCount >= 2} text="複数文で整理している" />
-              <Check ok={/however|but|also|because|while/.test(essay.toLowerCase())} text="情報の関係を示している" />
-            </>}
+
+            {selectedTask.type === "opinion" && (
+              <>
+                <Check ok={analysis.checks.hasOpinion} text="自分の意見がある" />
+                <Check ok={analysis.checks.hasFirst} text="First が使えている" />
+                <Check
+                  ok={analysis.checks.hasSecond}
+                  text="Second / Also が使えている"
+                />
+                <Check ok={analysis.checks.hasConclusion} text="結論表現がある" />
+              </>
+            )}
+
+            {selectedTask.type === "email" && (
+              <>
+                <Check ok={analysis.wordCount > 0} text="返信を書いている" />
+                <Check ok={analysis.checks.hasQuestion} text="疑問文がある" />
+                <Check
+                  ok={
+                    selectedTask.id.includes("g3")
+                      ? true
+                      : analysis.checks.hasTwoQuestions
+                  }
+                  text="必要な質問数を意識している"
+                />
+              </>
+            )}
+
+            {selectedTask.type === "summary" && (
+              <>
+                <Check ok={analysis.wordCount > 0} text="要約を書いている" />
+                <Check
+                  ok={analysis.checks.sentenceCount >= 2}
+                  text="複数文で整理している"
+                />
+                <Check
+                  ok={/however|but|also|because|while/.test(
+                    essay.toLowerCase()
+                  )}
+                  text="情報の関係を示している"
+                />
+              </>
+            )}
+
             <Check ok={analysis.inRange} text="語数が目安内" />
           </section>
 
           <section className="card">
             <h2>保存履歴</h2>
+
             {history.length === 0 && <p>まだ保存履歴はありません。</p>}
-            {history.slice(0, 6).map(h => <div className="history" key={h.id}><b>{h.className} / {h.studentName}</b><p>{h.level}・{h.taskType}・{h.score}/{h.maxScore}・{h.words} words</p><small>{h.time}</small></div>)}
+
+            {history.slice(0, 6).map((h) => (
+              <div className="history" key={h.id}>
+                <b>
+                  {h.className} / {h.studentName}
+                </b>
+                <p>
+                  {h.level}・{h.taskType}・{h.score}/{h.maxScore}・{h.words}{" "}
+                  words
+                </p>
+                {h.aiComment && <p>AI総評：{h.aiComment}</p>}
+                <small>{h.time}</small>
+              </div>
+            ))}
           </section>
         </aside>
       </div>
 
       <section className="rubricGrid">
-        {rubric.map(([key, jp, max]) => <div className="rubricCard" key={key}><div className="rowBetween"><h2>{jp}</h2><strong>{analysis.scores[key]}/{max}</strong></div><p>{feedback(key, analysis.scores[key], max, selectedTask.type)}</p></div>)}
+        {rubric.map(([key, jp, max]) => (
+          <div className="rubricCard" key={key}>
+            <div className="rowBetween">
+              <h2>{jp}</h2>
+              <strong>
+                {analysis.scores[key]}/{max}
+              </strong>
+            </div>
+            <p>{feedback(key, analysis.scores[key], max, selectedTask.type)}</p>
+          </div>
+        ))}
       </section>
     </main>
   );
 }
 
-function Prompt({ title, text }) { return <div className="prompt"><h3>{title}</h3><p>{text}</p></div>; }
-function Check({ ok, text }) { return <p className={ok ? 'check ok' : 'check'}>{ok ? '✓' : '○'} {text}</p>; }
+function Prompt({ title, text }) {
+  return (
+    <div className="prompt">
+      <h3>{title}</h3>
+      <p>{text}</p>
+    </div>
+  );
+}
 
-
+function Check({ ok, text }) {
+  return (
+    <p className={ok ? "check ok" : "check"}>
+      {ok ? "✓" : "○"} {text}
+    </p>
+  );
+}
