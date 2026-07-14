@@ -141,7 +141,8 @@ export default function App() {
   const [essay, setEssay] = useState(tasks.grade3[0].model);
   const [showModel, setShowModel] = useState(false);
   const [history, setHistory] = useState([]);
-
+  const [aiFeedback, setAiFeedback] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
   const taskList = tasks[level];
   const selectedTask = taskList.find(t => t.id === taskId) || taskList[0];
   const analysis = useMemo(() => analyzeEssay(essay, selectedTask, level), [essay, selectedTask, level]);
@@ -177,6 +178,43 @@ export default function App() {
   }
 
   function downloadCsv() {
+    async function getAiFeedback() {
+  setAiLoading(true);
+  setAiFeedback(null);
+
+  try {
+    const response = await fetch("/api/feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        level: levelLabels[level],
+        taskType: taskLabels[selectedTask.type],
+        question: selectedTask.question,
+        passage: selectedTask.passage,
+        email: selectedTask.email,
+        essay,
+        wordCount: analysis.wordCount
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI添削に失敗しました");
+    }
+
+    setAiFeedback(data.feedback);
+  } catch (error) {
+    setAiFeedback({
+      overallComment: "AI添削中にエラーが発生しました。時間をおいてもう一度試してください。",
+      detail: error.message
+    });
+  } finally {
+    setAiLoading(false);
+  }
+}
     const header = ['日時','クラス','生徒名','級','形式','問題','得点','満点','語数','英文'];
     const rows = history.map(h => [h.time,h.className,h.studentName,h.level,h.taskType,h.topic,h.score,h.maxScore,h.words,h.essay]);
     const csv = [header, ...rows].map(row => row.map(csvEscape).join(',')).join('\n');
@@ -230,11 +268,96 @@ export default function App() {
             <div className="rowBetween"><h2>解答入力</h2><strong>{analysis.wordCount} words / {wordStatus}</strong></div>
             <textarea value={essay} onChange={e => setEssay(e.target.value)} placeholder="Write your answer here..." />
             <div className="actions">
-              <button onClick={saveResult}>添削結果を保存</button>
-              <button className="secondary" onClick={() => setShowModel(!showModel)}>模範解答を{showModel ? '隠す' : '表示'}</button>
-              <button className="success" onClick={downloadCsv} disabled={history.length === 0}>CSV出力</button>
-            </div>
+           <button onClick={saveResult}>添削結果を保存</button>
+
+           <button className="secondary" onClick={() => setShowModel(!showModel)}>
+    模範解答を{showModel ? '隠す' : '表示'}
+  </button>
+
+  <button className="success" onClick={downloadCsv} disabled={history.length === 0}>
+    CSV出力
+  </button>
+
+  <button onClick={getAiFeedback} disabled={aiLoading}>
+    {aiLoading ? "AI添削中..." : "AIで詳しく添削"}
+  </button>
+</div>
             {showModel && <div className="model"><h3>模範解答例</h3><p>{selectedTask.model}</p></div>}
+            {aiFeedback && (
+  <div className="model">
+    <h3>AI添削結果</h3>
+
+    {aiFeedback.score && (
+      <p>
+        <strong>AIスコア：</strong>
+        {aiFeedback.score.total}点
+      </p>
+    )}
+
+    {aiFeedback.overallComment && (
+      <p>
+        <strong>総評：</strong>
+        {aiFeedback.overallComment}
+      </p>
+    )}
+
+    {aiFeedback.goodPoints && aiFeedback.goodPoints.length > 0 && (
+      <>
+        <h4>良い点</h4>
+        <ul>
+          {aiFeedback.goodPoints.map((point, index) => (
+            <li key={index}>{point}</li>
+          ))}
+        </ul>
+      </>
+    )}
+
+    {aiFeedback.improvementPoints && aiFeedback.improvementPoints.length > 0 && (
+      <>
+        <h4>改善点</h4>
+        <ul>
+          {aiFeedback.improvementPoints.map((point, index) => (
+            <li key={index}>{point}</li>
+          ))}
+        </ul>
+      </>
+    )}
+
+    {aiFeedback.grammarCorrections && aiFeedback.grammarCorrections.length > 0 && (
+      <>
+        <h4>文法・表現の修正</h4>
+        {aiFeedback.grammarCorrections.map((item, index) => (
+          <div key={index} className="history">
+            <p><strong>元の表現：</strong>{item.original}</p>
+            <p><strong>修正例：</strong>{item.corrected}</p>
+            <p><strong>説明：</strong>{item.explanation}</p>
+          </div>
+        ))}
+      </>
+    )}
+
+    {aiFeedback.improvedAnswer && (
+      <>
+        <h4>改善後の英文例</h4>
+        <p>{aiFeedback.improvedAnswer}</p>
+      </>
+    )}
+
+    {aiFeedback.nextAdvice && (
+      <p>
+        <strong>次回へのアドバイス：</strong>
+        {aiFeedback.nextAdvice}
+      </p>
+    )}
+
+    {aiFeedback.detail && (
+      <p>
+        <strong>詳細：</strong>
+        {aiFeedback.detail}
+      </p>
+    )}
+  </div>
+)}
           </section>
         </section>
 
