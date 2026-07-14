@@ -278,9 +278,9 @@ export default function App() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || "AI添削に失敗しました");
-      }
+     if (!response.ok) {
+  throw new Error(data.detail || data.error || "AI添削に失敗しました");
+}
 
       setAiFeedback(data.feedback);
     } catch (error) {
