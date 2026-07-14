@@ -238,49 +238,71 @@ export default function App() {
 }
 
   function downloadCsv() {
-    const header = [
-      "日時",
-      "クラス",
-      "生徒名",
-      "級",
-      "形式",
-      "問題",
-      "得点",
-      "満点",
-      "語数",
-      "英文",
-      "AI総評"
-    ];
+  const header = [
+    "日時",
+    "クラス",
+    "生徒名",
+    "級",
+    "形式",
+    "問題",
+    "簡易得点",
+    "満点",
+    "語数",
+    "英文",
 
-    const rows = history.map((h) => [
-      h.time,
-      h.className,
-      h.studentName,
-      h.level,
-      h.taskType,
-      h.topic,
-      h.score,
-      h.maxScore,
-      h.words,
-      h.essay,
-      h.aiComment || ""
-    ]);
+    "AI総合点",
+    "AI内容点",
+    "AI構成点",
+    "AI語彙点",
+    "AI文法点",
+    "AI総評",
+    "AI良い点",
+    "AI改善点",
+    "AI文法修正",
+    "AI改善後英文",
+    "AI次回アドバイス"
+  ];
 
-    const csv = [header, ...rows]
-      .map((row) => row.map(csvEscape).join(","))
-      .join("\n");
+  const rows = history.map((h) => [
+    h.time,
+    h.className,
+    h.studentName,
+    h.level,
+    h.taskType,
+    h.topic,
+    h.score,
+    h.maxScore,
+    h.words,
+    h.essay,
 
-    const blob = new Blob(["\ufeff" + csv], {
-      type: "text/csv;charset=utf-8;"
-    });
+    h.aiScoreTotal || "",
+    h.aiScoreContent || "",
+    h.aiScoreOrganization || "",
+    h.aiScoreVocabulary || "",
+    h.aiScoreGrammar || "",
+    h.aiComment || "",
+    h.aiGoodPoints || "",
+    h.aiImprovementPoints || "",
+    h.aiGrammarCorrections || "",
+    h.aiImprovedAnswer || "",
+    h.aiNextAdvice || ""
+  ]);
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "eiken-writing-results.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  const csv = [header, ...rows]
+    .map((row) => row.map(csvEscape).join(","))
+    .join("\n");
+
+  const blob = new Blob(["\ufeff" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "eiken-writing-results.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
   async function getAiFeedback() {
     setAiLoading(true);
