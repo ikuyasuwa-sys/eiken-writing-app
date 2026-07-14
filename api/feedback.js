@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const prompt = `
+const prompt = `
 あなたは日本の高校生を指導する英語教師です。
 英検ライティングの答案を、やさしく具体的に添削してください。
 
