@@ -1,8 +1,16 @@
 import { db } from "./firebase";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs
+} from "firebase/firestore";
 
 import { useMemo, useState } from 'react';
-
+import {
+  collection,
+  addDoc,
+  getDocs
+} from "firebase/firestore";
 const levelLabels = { grade3: '3級', pre2: '準2級', pre2plus: '準2級プラス', grade2: '2級', pre1: '準1級' };
 const taskLabels = { opinion: '意見論述', email: 'Eメール', summary: '要約' };
 const levels = ['grade3', 'pre2', 'pre2plus', 'grade2', 'pre1'];
@@ -49,6 +57,8 @@ const tasks = {
     { id:'p1-opinion-3', type:'opinion', title:'準1級 意見論述 3：宇宙開発', wordRange:'120〜150語', targetMin:120, targetMax:150, question:'Is spending public money on space exploration worthwhile?', points:['science','economy','environment','priorities'], model:'I believe spending public money on space exploration is worthwhile, but it should be carefully controlled. First, space programs lead to scientific progress and new technologies. Some technologies developed for space can later be used in daily life, medicine, and disaster prevention. Second, space projects can create jobs and encourage young people to study science. However, governments also have urgent problems on Earth, such as poverty and environmental damage. If too much money is spent on space, citizens may feel that their needs are ignored. Therefore, space exploration should continue, but governments must balance it with social responsibilities.' }
   ]
 };
+const [teacherMode, setTeacherMode] = useState(false);
+const [teacherData, setTeacherData] = useState([]);
 
 function countWords(text) { const words = text.trim().match(/[A-Za-z]+(?:'[A-Za-z]+)?/g); return words ? words.length : 0; }
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
@@ -146,7 +156,8 @@ export default function App() {
 
   const [aiFeedback, setAiFeedback] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
-
+const [teacherMode, setTeacherMode] = useState(false);
+const [teacherData, setTeacherData] = useState([]);
   const taskList = tasks[level];
   const selectedTask = taskList.find((t) => t.id === taskId) || taskList[0];
 
