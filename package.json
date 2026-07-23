@@ -9,7 +9,7 @@
     "vite": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "@google/genai": "latest"
+    "firebase": "^12.0.0"
   },
   "devDependencies": {}
 }
