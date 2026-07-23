@@ -1,29 +1,6 @@
 import { db } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
-async function saveToFirebase() {
-  try {
-    await addDoc(
-      collection(db, "submissions"),
-      {
-        className,
-        studentName,
-        level: levelLabels[level],
-        taskType: taskLabels[selectedTask.type],
-        topic: selectedTask.title,
-        score: analysis.total,
-        words: analysis.wordCount,
-        essay,
-        aiComment:
-          aiFeedback?.overallComment || "",
-        createdAt: new Date()
-      }
-    );
 
-    alert("Firebaseに保存しました");
-  } catch (error) {
-    alert(error.message);
-  }
-}
 import { useMemo, useState } from 'react';
 
 const levelLabels = { grade3: '3級', pre2: '準2級', pre2plus: '準2級プラス', grade2: '2級', pre1: '準1級' };
@@ -217,6 +194,7 @@ export default function App() {
   }
 
  function saveResult() {
+
   const grammarCorrectionsText =
     aiFeedback?.grammarCorrections && aiFeedback.grammarCorrections.length > 0
       ? aiFeedback.grammarCorrections
@@ -261,7 +239,32 @@ export default function App() {
 
   setHistory([item, ...history].slice(0, 50));
 }
+   async function saveToFirebase() {
+  try {
+    await addDoc(
+      collection(db, "submissions"),
+      {
+        className,
+        studentName,
+        level: levelLabels[level],
+        taskType: taskLabels[selectedTask.type],
+        topic: selectedTask.title,
+        score: analysis.total,
+        words: analysis.wordCount,
+        essay,
 
+        aiComment:
+          aiFeedback?.overallComment || "",
+
+        createdAt: new Date()
+      }
+    );
+
+    alert("Firebaseに保存しました");
+  } catch (error) {
+    alert(error.message);
+  }
+}
   function downloadCsv() {
   const header = [
     "日時",
@@ -476,6 +479,10 @@ export default function App() {
             />
 
             <div className="actions">
+              <button onClick={saveToFirebase}>
+  Firebase保存
+</button>
+
               <button onClick={saveResult}>添削結果を保存</button>
 
               <button
