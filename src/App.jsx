@@ -1,4 +1,29 @@
+import { db } from "./firebase";
+import { collection, addDoc } from "firebase/firestore";
+async function saveToFirebase() {
+  try {
+    await addDoc(
+      collection(db, "submissions"),
+      {
+        className,
+        studentName,
+        level: levelLabels[level],
+        taskType: taskLabels[selectedTask.type],
+        topic: selectedTask.title,
+        score: analysis.total,
+        words: analysis.wordCount,
+        essay,
+        aiComment:
+          aiFeedback?.overallComment || "",
+        createdAt: new Date()
+      }
+    );
 
+    alert("Firebaseに保存しました");
+  } catch (error) {
+    alert(error.message);
+  }
+}
 import { useMemo, useState } from 'react';
 
 const levelLabels = { grade3: '3級', pre2: '準2級', pre2plus: '準2級プラス', grade2: '2級', pre1: '準1級' };
