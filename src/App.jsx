@@ -408,7 +408,7 @@ alert("提出しました");
     const header = [
     "日時",
     "クラス",
-    "生徒名",
+    "出席番号",
     "級",
     "形式",
     "問題",
@@ -430,30 +430,7 @@ alert("提出しました");
     "AI次回アドバイス"
   ];
 
-  const rows = history.map((h) => [
-    h.time,
-    h.className,
-    h.studentnumber,
-    h.level,
-    h.taskType,
-    h.topic,
-    h.score,
-    h.maxScore,
-    h.words,
-    h.essay,
-
-    h.aiScoreTotal || "",
-    h.aiScoreContent || "",
-    h.aiScoreOrganization || "",
-    h.aiScoreVocabulary || "",
-    h.aiScoreGrammar || "",
-    h.aiComment || "",
-    h.aiGoodPoints || "",
-    h.aiImprovementPoints || "",
-    h.aiGrammarCorrections || "",
-    h.aiImprovedAnswer || "",
-    h.aiNextAdvice || ""
-  ]);
+ 
 
   const csv = [header, ...rows]
     .map((row) => row.map(csvEscape).join(","))
@@ -473,7 +450,7 @@ alert("提出しました");
   function downloadTeacherCsv() {
   const header = [
     "クラス",
-    "生徒名",
+    "出席番号",
     "級",
     "形式",
     "問題",
@@ -983,7 +960,8 @@ async function submitWithAi() {
   <details key={item.id} className="history">
     <summary className="submissionSummary">
       <strong>
-        {item.className || "クラス未入力"} / {item.studentnumber || "番号未入力"}
+       {item.className || "クラス未入力"} /{" "}
+        {item.studentnumber || "番号未入力"}番
       </strong>
       <span>
         {item.level}・{item.score}点・{item.words}語
