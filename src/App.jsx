@@ -355,6 +355,8 @@ const classSummary = classOptions.map((className) => {
       {
         className,
         studentNumber,
+        studentId:
+  `${className}-${studentNumber}`,
         level: levelLabels[level],
         taskType: taskLabels[selectedTask.type],
         topic: selectedTask.title,
