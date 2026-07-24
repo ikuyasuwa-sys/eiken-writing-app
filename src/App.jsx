@@ -1,10 +1,8 @@
 import { db } from "./firebase";
 import {
   collection,
-  addDoc,
-  getDocs
+  addDoc
 } from "firebase/firestore";
-
 import React, { useMemo, useState } from "react";
 
 const levelLabels = { grade3: '3級', pre2: '準2級', pre2plus: '準2級プラス', grade2: '2級', pre1: '準1級' };
@@ -216,10 +214,8 @@ export default function App() {
   const [aiFeedback, setAiFeedback] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
  
-  const [teacherMode, setTeacherMode] = useState(false);
- const [teacherData, setTeacherData] = useState([]);
-  const [teacherSearch, setTeacherSearch] = useState("");
-const [classFilter, setClassFilter] = useState("");
+  
+ 
   const [submitted, setSubmitted] = useState(false);
   const [submittedAt, setSubmittedAt] = useState("");
   const [submissionCount, setSubmissionCount] =
@@ -282,7 +278,7 @@ const displayTotal =
 const displayMaxTotal =
   selectedTask.type === "email" ? 9 : 16;
 
-  const filteredTeacherData = teacherData.filter((item) => {
+
   const matchesName =
     !teacherSearch ||
     String(item.studentNumber || "")
@@ -329,7 +325,7 @@ const studentNumbers = Array.from(
   { length: 40 },
   (_, i) => i + 1
 );
-const classSummary = classOptions.map((className) => {
+
   const records = teacherData.filter(
     (item) => item.className === className
   );
@@ -475,26 +471,7 @@ alert("提出しました");
     alert(error.message);
   }
 }
-  async function loadSubmissions() {
-  try {
-    const snapshot = await getDocs(
-      collection(db, "submissions")
-    );
-
-    const records = [];
-
-    snapshot.forEach((doc) => {
-      records.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
-
-    setTeacherData(records);
-  } catch (error) {
-    alert(error.message);
-  }
-}
+ 
   function downloadCsv() {
   
     const header = [
@@ -539,47 +516,7 @@ alert("提出しました");
   a.click();
   URL.revokeObjectURL(url);
 }
-  function downloadTeacherCsv() {
-  const header = [
-    "クラス",
-    "出席番号",
-    "級",
-    "形式",
-    "問題",
-    "得点",
-    "語数",
-    "英文",
-    "AI総評"
-  ];
-
-  const rows = filteredTeacherData.map((item) => [
-    item.className || "",
-    item.studentNumber || "",
-    item.level || "",
-    item.taskType || "",
-    item.topic || "",
-    item.score || "",
-    item.words || "",
-    item.essay || "",
-    item.aiComment || ""
-  ]);
-
-  const csv = [header, ...rows]
-    .map((row) => row.map(csvEscape).join(","))
-    .join("\n");
-
-  const blob = new Blob(["\ufeff" + csv], {
-    type: "text/csv;charset=utf-8;"
-  });
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "teacher-submissions.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
+ 
   async function getAiFeedback() {
     setAiLoading(true);
     setAiFeedback(null);
@@ -706,21 +643,7 @@ async function submitWithAi() {
         </div>
 
       <div className="levelButtons">
-<button
-  className="secondary"
-  onClick={() => {
-    setTeacherMode(true);
-    loadSubmissions();
-  }}
->
-  先生モード
-</button>
 
-<button
-  onClick={() => setTeacherMode(false)}
->
-  生徒モード
-</button>
 
 
           {levels.map((lv) => (
@@ -1048,168 +971,7 @@ async function submitWithAi() {
   </div>
 ))}
       </section>
-   {teacherMode && (
-  <section className="card">
-    <h2>先生モード：提出一覧</h2>
-
-    <p>提出件数：{teacherData.length}件</p>
-
-   {teacherData.map((item) => (
-  <details key={item.id} className="history">
-    <summary className="submissionSummary">
-      <strong>
-       {item.className || "クラス未入力"} /{" "}
-        {item.studentNumber || "番号未入力"}番
-      </strong>
-      <span>
-        {item.level}・{item.score}点・{item.words}語
-      </span>
-    </summary>
-
-    <div className="submissionDetail">
-      <p>級：{item.level}</p>
-      <p>形式：{item.taskType}</p>
-      <p>問題：{item.topic}</p>
-      <p>得点：{item.score}</p>
-      <p>語数：{item.words}</p>
-
-      {item.essay && (
-        <details className="innerDetails">
-          <summary>英文を見る</summary>
-          <p>{item.essay}</p>
-        </details>
-      )}
-
-      {item.aiComment && (
-        <details className="innerDetails">
-          <summary>AI総評を見る</summary>
-          <p>{item.aiComment}</p>
-        </details>
-      )}
-    </div>
-  </details>
-))}
-  </section>
-)}
-   {teacherMode && (
-  <section className="card">
-    <h2>先生モード：提出管理</h2>
-
-    <div className="grid2">
-      <div className="history">
-        <strong>提出件数</strong>
-        <p>{totalSubmissions}件</p>
-      </div>
-
-      <div className="history">
-        <strong>平均点</strong>
-        <p>{averageScore}点</p>
-      </div>
-
-      <div className="history">
-        <strong>平均語数</strong>
-        <p>{averageWords}語</p>
-      </div>
-
-      <div className="history">
-        <strong>全データ件数</strong>
-        <p>{teacherData.length}件</p>
-      </div>
-    </div>
-
-    <div className="grid2" style={{ marginTop: "16px" }}>
-      <label>
-        生徒名検索
-        <input
-          value={teacherSearch}
-          onChange={(e) => setTeacherSearch(e.target.value)}
-          placeholder="例：山田"
-        />
-      </label>
-
-      <label>
-        クラス絞り込み
-        <select
-          value={classFilter}
-          onChange={(e) => setClassFilter(e.target.value)}
-        >
-          <option value="">すべてのクラス</option>
-          {classOptions.map((className) => (
-            <option key={className} value={className}>
-              {className}
-            </option>
-          ))}
-        </select>
-      </label>
-    </div>
-
-    <div className="actions" style={{ marginTop: "16px" }}>
-      <button
-        onClick={loadSubmissions}
-      >
-        最新データを読み込む
-      </button>
-
-      <button
-        className="success"
-        onClick={downloadTeacherCsv}
-        disabled={filteredTeacherData.length === 0}
-      >
-        先生用CSV出力
-      </button>
-    </div>
-
-    <h3>クラス別集計</h3>
-
-    {classSummary.map((item) => (
-      <div key={item.className} className="history">
-        <p>
-          <strong>{item.className}</strong>
-        </p>
-        <p>提出数：{item.count}件</p>
-        <p>平均点：{item.avgScore}点</p>
-        <p>平均語数：{item.avgWords}語</p>
-      </div>
-    ))}
-
-    <h3>提出一覧</h3>
-
-    {filteredTeacherData.length === 0 && (
-      <p>表示する提出データがありません。</p>
-    )}
-
-    {filteredTeacherData.map((item) => (
-      <div key={item.id} className="history">
-        <p>
-          <strong>
-            {item.className || "クラス未入力"} /{" "}
-            {item.studentNumber || "番号未入力"}
-          </strong>
-        </p>
-
-        <p>級：{item.level}</p>
-        <p>形式：{item.taskType}</p>
-        <p>問題：{item.topic}</p>
-        <p>得点：{item.score}</p>
-        <p>語数：{item.words}</p>
-
-        {item.essay && (
-          <details>
-            <summary>英文を見る</summary>
-            <p>{item.essay}</p>
-          </details>
-        )}
-
-        {item.aiComment && (
-          <details>
-            <summary>AI総評を見る</summary>
-            <p>{item.aiComment}</p>
-          </details>
-        )}
-      </div>
-    ))}
-  </section>
-)}
+  
     </main>
   );
 }
