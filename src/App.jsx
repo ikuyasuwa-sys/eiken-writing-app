@@ -531,7 +531,76 @@ alert("提出しました");
       setAiLoading(false);
     }
   }
+async function submitWithAi() {
+  try {
+    setAiLoading(true);
 
+    const response = await fetch("/api/feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        level: levelLabels[level],
+        taskType: taskLabels[selectedTask.type],
+        question: selectedTask.question,
+        passage: selectedTask.passage,
+        email: selectedTask.email,
+        essay,
+        wordCount: analysis.wordCount
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail ||
+        data.error ||
+        "AI添削に失敗しました"
+      );
+    }
+
+    const feedback = data.feedback;
+
+    setAiFeedback(feedback);
+
+    await addDoc(
+      collection(db, "submissions"),
+      {
+        className,
+        studentName,
+        level: levelLabels[level],
+        taskType: taskLabels[selectedTask.type],
+        topic: selectedTask.title,
+        score: analysis.total,
+        words: analysis.wordCount,
+        essay,
+
+        aiComment:
+          feedback?.overallComment || "",
+
+        createdAt: new Date()
+      }
+    );
+
+    const now =
+      new Date().toLocaleString("ja-JP");
+
+    setSubmitted(true);
+    setSubmittedAt(now);
+
+    setSubmissionCount(
+      (prev) => prev + 1
+    );
+
+    alert("AI添削と提出が完了しました");
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    setAiLoading(false);
+  }
+}
   return (
     <main className="app">
       <section className="hero card">
@@ -659,10 +728,14 @@ alert("提出しました");
   }
 />
             <div className="actions">
-              <button onClick={saveToFirebase}>
-  提出する
+             <button
+  onClick={submitWithAi}
+  disabled={aiLoading}
+>
+  {aiLoading
+    ? "添削・提出中..."
+    : "提出"}
 </button>
-
               
               <button
                 className="secondary"
@@ -670,11 +743,8 @@ alert("提出しました");
               >
                 模範解答を{showModel ? "隠す" : "表示"}
               </button>
-
-             
-              <button onClick={getAiFeedback} disabled={aiLoading}>
-                {aiLoading ? "AI添削中..." : "AIで詳しく添削"}
-              </button>
+                        
+  
             </div>
 {submitted && (
   <div className="history">
