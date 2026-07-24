@@ -162,7 +162,8 @@ export default function App() {
   const [taskId, setTaskId] = useState("g3-email-1");
   const [studentNumber, setStudentNumber] =  useState("");
   const [className, setClassName] = useState("");
-  const [essay, setEssay] = useState(tasks.grade3[0].model);
+  const [essay, setEssay] = useState("");
+``
   const [showModel, setShowModel] = useState(false);
   const [history, setHistory] = useState([]);
 
@@ -289,7 +290,7 @@ const classSummary = classOptions.map((className) => {
     setLevel(nextLevel);
     const firstTask = tasks[nextLevel][0];
     setTaskId(firstTask.id);
-    setEssay(firstTask.model);
+    setEssay("");
     setShowModel(false);
     setAiFeedback(null);
   }
@@ -297,7 +298,7 @@ const classSummary = classOptions.map((className) => {
   function changeTask(nextTaskId) {
     const nextTask = taskList.find((t) => t.id === nextTaskId) || taskList[0];
     setTaskId(nextTask.id);
-    setEssay(nextTask.model);
+    setEssay("");
     setShowModel(false);
     setAiFeedback(null);
   }
