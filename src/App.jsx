@@ -160,7 +160,7 @@ function csvEscape(value) { return `"${String(value).replaceAll('"','""')}"`; }
 export default function App() {
   const [level, setLevel] = useState("grade3");
   const [taskId, setTaskId] = useState("g3-email-1");
-  const [studentName, setStudentName] = useState("");
+  const [studentNumber, setStudentNumber] =  useState("");
   const [className, setClassName] = useState("");
   const [essay, setEssay] = useState(tasks.grade3[0].model);
   const [showModel, setShowModel] = useState(false);
@@ -248,7 +248,10 @@ const classOptions = [
       .filter(Boolean)
   )
 ];
-
+const studentNumbers = Array.from(
+  { length: 40 },
+  (_, i) => i + 1
+);
 const classSummary = classOptions.map((className) => {
   const records = teacherData.filter(
     (item) => item.className === className
@@ -351,7 +354,7 @@ const classSummary = classOptions.map((className) => {
       collection(db, "submissions"),
       {
         className,
-        studentName,
+        studentNumber,
         level: levelLabels[level],
         taskType: taskLabels[selectedTask.type],
         topic: selectedTask.title,
@@ -480,7 +483,7 @@ alert("提出しました");
 
   const rows = filteredTeacherData.map((item) => [
     item.className || "",
-    item.studentName || "",
+    item.studentNumber || "",
     item.level || "",
     item.taskType || "",
     item.topic || "",
@@ -682,14 +685,29 @@ async function submitWithAi() {
     ))}
   </select>
 </label>
-            <label>
-              4桁番号
-              <input
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
-                placeholder="例：3101"
-              />
-            </label>
+           <label>
+  出席番号
+
+  <select
+    value={studentNumber}
+    onChange={(e) =>
+      setStudentNumber(e.target.value)
+    }
+  >
+    <option value="">
+      番号を選択してください
+    </option>
+
+    {studentNumbers.map((num) => (
+      <option
+        key={num}
+        value={num}
+      >
+        {num}
+      </option>
+    ))}
+  </select>
+</label>
 
        
           </div>
