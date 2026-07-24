@@ -280,9 +280,6 @@ const displayTotal =
       displayScores.vocabulary +
       displayScores.grammar;
 
-const displayMaxTotal =
-  selectedTask.type === "email" ? 9 : 16;
-
 const displayTotal = aiScores
   ? Number(aiScores.total || 0)
   : 0;
