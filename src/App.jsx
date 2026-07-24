@@ -867,25 +867,40 @@ const classSummary = classOptions.map((className) => {
 
     <p>提出件数：{teacherData.length}件</p>
 
-    {teacherData.map((item) => (
-      <div key={item.id} className="history">
-        <p>
-          <strong>
-            {item.className || "クラス未入力"} / {item.studentName || "名前未入力"}
-          </strong>
-        </p>
+   {teacherData.map((item) => (
+  <details key={item.id} className="history">
+    <summary className="submissionSummary">
+      <strong>
+        {item.className || "クラス未入力"} / {item.studentName || "名前未入力"}
+      </strong>
+      <span>
+        {item.level}・{item.score}点・{item.words}語
+      </span>
+    </summary>
 
-        <p>級：{item.level}</p>
-        <p>形式：{item.taskType}</p>
-        <p>問題：{item.topic}</p>
-        <p>得点：{item.score}</p>
-        <p>語数：{item.words}</p>
+    <div className="submissionDetail">
+      <p>級：{item.level}</p>
+      <p>形式：{item.taskType}</p>
+      <p>問題：{item.topic}</p>
+      <p>得点：{item.score}</p>
+      <p>語数：{item.words}</p>
 
-        {item.aiComment && (
-          <p>AI総評：{item.aiComment}</p>
-        )}
-      </div>
-    ))}
+      {item.essay && (
+        <details className="innerDetails">
+          <summary>英文を見る</summary>
+          <p>{item.essay}</p>
+        </details>
+      )}
+
+      {item.aiComment && (
+        <details className="innerDetails">
+          <summary>AI総評を見る</summary>
+          <p>{item.aiComment}</p>
+        </details>
+      )}
+    </div>
+  </details>
+))}
   </section>
 )}
    {teacherMode && (
