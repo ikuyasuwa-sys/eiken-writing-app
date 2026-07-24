@@ -676,6 +676,7 @@ async function submitWithAi() {
 
            <label>
   クラス
+             <p>クラス数: {classOptions.length}</p>
   <select
     value={className}
     onChange={(e) => setClassName(e.target.value)}
