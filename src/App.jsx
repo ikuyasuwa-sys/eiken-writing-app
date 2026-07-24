@@ -649,10 +649,11 @@ alert("提出しました");
            <textarea
   value={essay}
   readOnly={submitted}
-  onChange={(e) => setEssay(e.target.value)}
-  placeholder="Write your answer here..."
+  className={submitted ? "submittedEssay" : ""}
+  onChange={(e) =>
+    setEssay(e.target.value)
+  }
 />
-
             <div className="actions">
               <button onClick={saveToFirebase}>
   提出する
