@@ -232,12 +232,14 @@ const [classFilter, setClassFilter] = useState("");
     [essay, selectedTask, level]
   );
 
-  const wordStatus =
-    analysis.wordCount < selectedTask.targetMin
-      ? "少なめ"
-      : analysis.wordCount > selectedTask.targetMax
-      ? "多め"
-      : "適正";
+ const wordStatus =
+  analysis.wordCount === 0
+    ? "未入力"
+    : analysis.wordCount < selectedTask.targetMin
+    ? "少なめ"
+    : analysis.wordCount > selectedTask.targetMax
+    ? "多め"
+    : "適正";
 
   const rubric =
     selectedTask.type === "email"
@@ -792,8 +794,10 @@ async function submitWithAi() {
             <div className="rowBetween">
               <h2>解答入力</h2>
               <strong>
-                {analysis.wordCount} words / {wordStatus}
-              </strong>
+  {analysis.wordCount === 0
+    ? "未入力"
+    : `${analysis.wordCount} words / ${wordStatus}`}
+</strong>
             </div>
 {submitted && (
   <div className="submittedBanner">
