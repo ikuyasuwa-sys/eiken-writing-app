@@ -665,16 +665,7 @@ async function submitWithAi() {
       <div className="layout">
         <section className="mainColumn">
           <div className="card grid2">
-            <label>
-              生徒名
-              <input
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
-                placeholder="例：山田 太郎"
-              />
-            </label>
-
-           <label>
+               <label>
   クラス
   <select
     value={className}
@@ -691,6 +682,16 @@ async function submitWithAi() {
     ))}
   </select>
 </label>
+            <label>
+              4桁番号
+              <input
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="例：3101"
+              />
+            </label>
+
+       
           </div>
 
           <section className="card">
