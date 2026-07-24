@@ -10,7 +10,7 @@ import React, { useMemo, useState } from "react";
 const levelLabels = { grade3: '3級', pre2: '準2級', pre2plus: '準2級プラス', grade2: '2級', pre1: '準1級' };
 const taskLabels = { opinion: '意見論述', email: 'Eメール', summary: '要約' };
 const levels = ['grade3', 'pre2', 'pre2plus', 'grade2', 'pre1'];
-const classOptions = [
+const schoolClasses = [
   "1年1組",
   "1年2組",
   "1年3組",
@@ -676,7 +676,7 @@ async function submitWithAi() {
 
            <label>
   クラス
-             <p>クラス数: {classOptions.length}</p>
+             <p>クラス数: {schoolClasses.length}</p>
   <select
     value={className}
     onChange={(e) => setClassName(e.target.value)}
@@ -685,7 +685,7 @@ async function submitWithAi() {
       クラスを選択してください
     </option>
 
-    {classOptions.map((cls) => (
+    {schoolClasses.map((cls) => (
       <option key={cls} value={cls}>
         {cls}
       </option>
