@@ -76,6 +76,52 @@ function countWords(text) { const words = text.trim().match(/[A-Za-z]+(?:'[A-Za-
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 
 function analyzeEssay(text, task, level) {
+  if (!text.trim()) {
+  if (task.type === "email") {
+    return {
+      scores: {
+        content: 0,
+        vocabulary: 0,
+        grammar: 0
+      },
+      total: 0,
+      maxTotal: 9,
+      wordCount: 0,
+      inRange: false,
+      checks: {
+        hasOpinion: false,
+        hasFirst: false,
+        hasSecond: false,
+        hasConclusion: false,
+        hasQuestion: false,
+        hasTwoQuestions: false,
+        sentenceCount: 0
+      }
+    };
+  }
+
+  return {
+    scores: {
+      content: 0,
+      organization: 0,
+      vocabulary: 0,
+      grammar: 0
+    },
+    total: 0,
+    maxTotal: 16,
+    wordCount: 0,
+    inRange: false,
+    checks: {
+      hasOpinion: false,
+      hasFirst: false,
+      hasSecond: false,
+      hasConclusion: false,
+      hasQuestion: false,
+      hasTwoQuestions: false,
+      sentenceCount: 0
+    }
+  };
+}
   const wordCount = countWords(text);
   const lower = text.toLowerCase();
   const hasOpinion = /i think|i agree|i disagree|in my opinion|i believe|yes|no|partly agree/.test(lower);
