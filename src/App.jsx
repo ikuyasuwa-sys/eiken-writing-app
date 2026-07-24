@@ -350,6 +350,15 @@ const classSummary = classOptions.map((className) => {
 }
    async function saveToFirebase() {
   try {
+    if (!className) {
+  alert("クラスを選択してください");
+  return;
+}
+
+if (!studentNumber) {
+  alert("出席番号を選択してください");
+  return;
+}
     await addDoc(
       collection(db, "submissions"),
       {
