@@ -254,6 +254,28 @@ const [classFilter, setClassFilter] = useState("");
           ["vocabulary", "語彙", 4],
           ["grammar", "文法", 4]
         ];
+  const aiScores = aiFeedback?.score || null;
+
+const displayScores = aiScores
+  ? {
+      content: Number(aiScores.content || 0),
+      organization: Number(aiScores.organization || 0),
+      vocabulary: Number(aiScores.vocabulary || 0),
+      grammar: Number(aiScores.grammar || 0)
+    }
+  : {
+      content: 0,
+      organization: 0,
+      vocabulary: 0,
+      grammar: 0
+    };
+
+const displayTotal = aiScores
+  ? Number(aiScores.total || 0)
+  : 0;
+
+const displayMaxTotal =
+  selectedTask.type === "email" ? 9 : 16;
   const filteredTeacherData = teacherData.filter((item) => {
   const matchesName =
     !teacherSearch ||
@@ -418,8 +440,14 @@ if (!studentNumber) {
         level: levelLabels[level],
         taskType: taskLabels[selectedTask.type],
         topic: selectedTask.title,
-        score: analysis.total,
-        words: analysis.wordCount,
+       score: displayTotal,
+maxScore: displayMaxTotal,
+words: analysis.wordCount,
+
+aiScoreContent: displayScores.content,
+aiScoreOrganization: displayScores.organization,
+aiScoreVocabulary: displayScores.vocabulary,
+aiScoreGrammar: displayScores.grammar,
         essay,
 
         aiComment:
@@ -939,10 +967,10 @@ async function submitWithAi() {
           <section className="scoreCard">
             <p>総合スコア</p>
             <div>
-              <strong>{analysis.total}</strong>
-              <span>/ {analysis.maxTotal}</span>
+             <strong>{displayTotal}</strong>
+<span>/ {displayMaxTotal}</span>
             </div>
-            <progress value={analysis.total} max={analysis.maxTotal}></progress>
+           <progress value={displayTotal} max={displayMaxTotal}></progress>
           </section>
 
           <section className="card">
@@ -997,17 +1025,22 @@ async function submitWithAi() {
       </div>
 
       <section className="rubricGrid">
-        {rubric.map(([key, jp, max]) => (
-          <div className="rubricCard" key={key}>
-            <div className="rowBetween">
-              <h2>{jp}</h2>
-              <strong>
-                {analysis.scores[key]}/{max}
-              </strong>
-            </div>
-            <p>{feedback(key, analysis.scores[key], max, selectedTask.type)}</p>
-          </div>
-        ))}
+       {rubric.map(([key, jp, max]) => (
+  <div className="rubricCard" key={key}>
+    <div className="rowBetween">
+      <h2>{jp}</h2>
+      <strong>
+        {displayScores[key] || 0}/{max}
+      </strong>
+    </div>
+
+    <p>
+      {aiScores
+        ? "AI添削結果をもとにした評価です。"
+        : "AI添削後に評価が表示されます。"}
+    </p>
+  </div>
+))}
       </section>
    {teacherMode && (
   <section className="card">
