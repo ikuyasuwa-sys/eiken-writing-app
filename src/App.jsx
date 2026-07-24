@@ -152,8 +152,8 @@ export default function App() {
 
   const [aiFeedback, setAiFeedback] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
-const [teacherMode, setTeacherMode] = useState(false);
-const [teacherData, setTeacherData] = useState([]);
+// const [teacherMode, setTeacherMode] = useState(false);
+// const [teacherData, setTeacherData] = useState([]);
   const taskList = tasks[level];
   const selectedTask = taskList.find((t) => t.id === taskId) || taskList[0];
 
@@ -272,6 +272,7 @@ const [teacherData, setTeacherData] = useState([]);
     alert(error.message);
   }
 }
+ /*
   async function loadSubmissions() {
   try {
     const snapshot = await getDocs(
@@ -292,6 +293,7 @@ const [teacherData, setTeacherData] = useState([]);
     alert(error.message);
   }
 }
+*/
   function downloadCsv() {
   const header = [
     "日時",
@@ -417,21 +419,7 @@ const [teacherData, setTeacherData] = useState([]);
 
       <div className="levelButtons">
 
-  <button
-    onClick={() => setTeacherMode(false)}
-  >
-    生徒モード
-  </button>
 
-  <button
-    className="secondary"
-    onClick={() => {
-      setTeacherMode(true);
-      loadSubmissions();
-    }}
-  >
-    先生モード
-  </button>
 
           {levels.map((lv) => (
       
