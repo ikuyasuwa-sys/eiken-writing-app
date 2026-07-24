@@ -322,9 +322,17 @@ textarea:disabled {
 }
 select {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: 16px;
+  height: 54px;
+
+  padding: 0 16px;
+
   border: 2px solid #334155;
-  font-size: 16px;
+  border-radius: 18px;
+
   background: white;
+
+  font-size: 18px;
+  font-family: inherit;
+
+  appearance: none;
 }
