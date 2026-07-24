@@ -5,7 +5,7 @@ import {
   getDocs
 } from "firebase/firestore";
 
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from "react";
 
 const levelLabels = { grade3: '3級', pre2: '準2級', pre2plus: '準2級プラス', grade2: '2級', pre1: '準1級' };
 const taskLabels = { opinion: '意見論述', email: 'Eメール', summary: '要約' };
