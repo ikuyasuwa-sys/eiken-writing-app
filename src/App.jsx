@@ -254,7 +254,7 @@ const [classFilter, setClassFilter] = useState("");
           ["vocabulary", "語彙", 4],
           ["grammar", "文法", 4]
         ];
-  const aiScores = aiFeedback?.score || null;
+ const aiScores = aiFeedback?.score || null;
 
 const displayScores = aiScores
   ? {
@@ -269,6 +269,19 @@ const displayScores = aiScores
       vocabulary: 0,
       grammar: 0
     };
+
+const displayTotal =
+  selectedTask.type === "email"
+    ? displayScores.content +
+      displayScores.vocabulary +
+      displayScores.grammar
+    : displayScores.content +
+      displayScores.organization +
+      displayScores.vocabulary +
+      displayScores.grammar;
+
+const displayMaxTotal =
+  selectedTask.type === "email" ? 9 : 16;
 
 const displayTotal = aiScores
   ? Number(aiScores.total || 0)
@@ -877,12 +890,12 @@ async function submitWithAi() {
               <div className="model">
                 <h3>AI添削結果</h3>
 
-                {aiFeedback.score && (
-                  <p>
-                    <strong>AIスコア：</strong>
-                    {aiFeedback.score.total}点
-                  </p>
-                )}
+              {aiFeedback.score && (
+  <p>
+    <strong>AIスコア：</strong>
+    {displayTotal}点
+  </p>
+)}
 
                 {aiFeedback.overallComment && (
                   <p>
