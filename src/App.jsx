@@ -155,6 +155,7 @@ export default function App() {
  const [teacherData, setTeacherData] = useState([]);
   const [teacherSearch, setTeacherSearch] = useState("");
 const [classFilter, setClassFilter] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const taskList = tasks[level];
   const selectedTask = taskList.find((t) => t.id === taskId) || taskList[0];
 
@@ -343,7 +344,7 @@ const classSummary = classOptions.map((className) => {
         createdAt: new Date()
       }
     );
-
+setSubmitted(true);
     alert("Firebaseに保存しました");
   } catch (error) {
     alert(error.message);
@@ -643,11 +644,10 @@ const classSummary = classOptions.map((className) => {
 
             <div className="actions">
               <button onClick={saveToFirebase}>
-  Firebase保存
+  提出する
 </button>
 
-              <button onClick={saveResult}>添削結果を保存</button>
-
+              
               <button
                 className="secondary"
                 onClick={() => setShowModel(!showModel)}
@@ -655,19 +655,16 @@ const classSummary = classOptions.map((className) => {
                 模範解答を{showModel ? "隠す" : "表示"}
               </button>
 
-              <button
-                className="success"
-                onClick={downloadCsv}
-                disabled={history.length === 0}
-              >
-                CSV出力
-              </button>
-
+             
               <button onClick={getAiFeedback} disabled={aiLoading}>
                 {aiLoading ? "AI添削中..." : "AIで詳しく添削"}
               </button>
             </div>
-
+{submitted && (
+  <div className="history">
+    ✅ 提出済み
+  </div>
+)}
             {showModel && (
               <div className="model">
                 <h3>模範解答例</h3>
@@ -824,28 +821,7 @@ const classSummary = classOptions.map((className) => {
             <Check ok={analysis.inRange} text="語数が目安内" />
           </section>
 
-        <section className="card">
-  <h2>保存履歴</h2>
-
-  {history.length === 0 && <p>まだ保存履歴はありません。</p>}
-
-  {history.slice(0, 6).map((h) => (
-    <div className="history" key={h.id}>
-      <b>
-        {h.className} / {h.studentName}
-      </b>
-
-      <p>
-        {h.level}・{h.taskType}・{h.score}/{h.maxScore}・{h.words} words
-      </p>
-
-      {h.aiComment && <p>AI総評：{h.aiComment}</p>}
-
-      <small>{h.time}</small>
-    </div>
-  ))}
-</section>
-        </aside>
+              </aside>
       </div>
 
       <section className="rubricGrid">
