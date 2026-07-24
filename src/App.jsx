@@ -208,7 +208,7 @@ const [classFilter, setClassFilter] = useState("");
   const filteredTeacherData = teacherData.filter((item) => {
   const matchesName =
     !teacherSearch ||
-    String(item.studentName || "")
+    String(item.studentNumber || "")
       .toLowerCase()
       .includes(teacherSearch.toLowerCase());
 
@@ -319,7 +319,7 @@ const classSummary = classOptions.map((className) => {
     id: Date.now(),
     time: new Date().toLocaleString("ja-JP"),
     className: className || "未入力",
-    studentName: studentName || "未入力",
+    studentnumber: studentnumber || "未入力",
     level: levelLabels[level],
     taskType: taskLabels[selectedTask.type],
     topic: selectedTask.title,
@@ -433,7 +433,7 @@ alert("提出しました");
   const rows = history.map((h) => [
     h.time,
     h.className,
-    h.studentName,
+    h.studentnumber,
     h.level,
     h.taskType,
     h.topic,
@@ -592,7 +592,7 @@ async function submitWithAi() {
       collection(db, "submissions"),
       {
         className,
-        studentName,
+        studentnumber,
         level: levelLabels[level],
         taskType: taskLabels[selectedTask.type],
         topic: selectedTask.title,
@@ -983,7 +983,7 @@ async function submitWithAi() {
   <details key={item.id} className="history">
     <summary className="submissionSummary">
       <strong>
-        {item.className || "クラス未入力"} / {item.studentName || "名前未入力"}
+        {item.className || "クラス未入力"} / {item.studentnumber || "番号未入力"}
       </strong>
       <span>
         {item.level}・{item.score}点・{item.words}語
@@ -1107,7 +1107,7 @@ async function submitWithAi() {
         <p>
           <strong>
             {item.className || "クラス未入力"} /{" "}
-            {item.studentName || "名前未入力"}
+            {item.studentnumber || "番号未入力"}
           </strong>
         </p>
 
