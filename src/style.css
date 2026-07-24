@@ -298,3 +298,8 @@ progress {
   font-weight: 800;
   color: #1d4ed8;
 }
+textarea:disabled {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
