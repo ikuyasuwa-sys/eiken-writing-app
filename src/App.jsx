@@ -10,7 +10,25 @@ import React, { useMemo, useState } from "react";
 const levelLabels = { grade3: '3級', pre2: '準2級', pre2plus: '準2級プラス', grade2: '2級', pre1: '準1級' };
 const taskLabels = { opinion: '意見論述', email: 'Eメール', summary: '要約' };
 const levels = ['grade3', 'pre2', 'pre2plus', 'grade2', 'pre1'];
+const classOptions = [
+  "1年1組",
+  "1年2組",
+  "1年3組",
+  "1年4組",
+  "1年5組",
 
+  "2年1組",
+  "2年2組",
+  "2年3組",
+  "2年4組",
+  "2年5組",
+
+  "3年1組",
+  "3年2組",
+  "3年3組",
+  "3年4組",
+  "3年5組"
+];
 const tasks = {
   grade3: [
     { id:'g3-email-1', type:'email', title:'3級 Eメール 1：週末', wordRange:'15〜25語', targetMin:15, targetMax:25, question:'You received an e-mail from your friend Alex. Write a reply and answer both questions.', email:'Hi! I went to a summer festival yesterday. It was very fun. What did you do last weekend? Did you enjoy it? Your friend, Alex', points:['2つの質問に答える','自然な返信','15〜25語'], model:'Hi Alex. I played soccer with my friends last weekend. Yes, I enjoyed it because the weather was nice and we had a good time.' },
@@ -656,14 +674,23 @@ async function submitWithAi() {
               />
             </label>
 
-            <label>
-              クラス
-              <input
-                value={className}
-                onChange={(e) => setClassName(e.target.value)}
-                placeholder="例：2年5組"
-              />
-            </label>
+           <label>
+  クラス
+  <select
+    value={className}
+    onChange={(e) => setClassName(e.target.value)}
+  >
+    <option value="">
+      クラスを選択してください
+    </option>
+
+    {classOptions.map((cls) => (
+      <option key={cls} value={cls}>
+        {cls}
+      </option>
+    ))}
+  </select>
+</label>
           </div>
 
           <section className="card">
