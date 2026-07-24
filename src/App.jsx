@@ -276,6 +276,26 @@ const [teacherData, setTeacherData] = useState([]);
     alert(error.message);
   }
 }
+  async function loadSubmissions() {
+  try {
+    const snapshot = await getDocs(
+      collection(db, "submissions")
+    );
+
+    const records = [];
+
+    snapshot.forEach((doc) => {
+      records.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    setTeacherData(records);
+  } catch (error) {
+    alert(error.message);
+  }
+}
   function downloadCsv() {
   const header = [
     "日時",
@@ -399,8 +419,26 @@ const [teacherData, setTeacherData] = useState([]);
           </p>
         </div>
 
-        <div className="levelButtons">
+      <div className="levelButtons">
+
+  <button
+    onClick={() => setTeacherMode(false)}
+  >
+    生徒モード
+  </button>
+
+  <button
+    className="secondary"
+    onClick={() => {
+      setTeacherMode(true);
+      loadSubmissions();
+    }}
+  >
+    先生モード
+  </button>
+
           {levels.map((lv) => (
+      
             <button
               key={lv}
               className={level === lv ? "active" : ""}
