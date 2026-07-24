@@ -614,11 +614,11 @@ async function submitWithAi() {
     <main className="app">
       <section className="hero card">
         <div>
-          <p className="eyebrow">英検ライティング添削アプリ</p>
-          <h1>3級〜準1級：問題バンク版</h1>
+          <p className="eyebrow">英検ライティング問題演習</p>
+          <h1>3級〜準1級</h1>
           <p>
-            各級6問搭載。Eメール・意見論述・要約に対応しています。
-            AI添削機能も利用できます。
+            自分の練習したい級と問題タイプを選び、英文を入力しましょう。
+            入力ができたら提出ボタンを押して添削してもらいましょう。
           </p>
         </div>
 
