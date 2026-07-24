@@ -271,7 +271,6 @@ export default function App() {
     alert(error.message);
   }
 }
- /*
   async function loadSubmissions() {
   try {
     const snapshot = await getDocs(
@@ -292,7 +291,6 @@ export default function App() {
     alert(error.message);
   }
 }
-*/
   function downloadCsv() {
   const header = [
     "日時",
@@ -417,7 +415,21 @@ export default function App() {
         </div>
 
       <div className="levelButtons">
+<button
+  className="secondary"
+  onClick={() => {
+    setTeacherMode(true);
+    loadSubmissions();
+  }}
+>
+  先生モード
+</button>
 
+<button
+  onClick={() => setTeacherMode(false)}
+>
+  生徒モード
+</button>
 
 
           {levels.map((lv) => (
@@ -730,6 +742,33 @@ export default function App() {
           </div>
         ))}
       </section>
+   {teacherMode && (
+  <section className="card">
+    <h2>先生モード：提出一覧</h2>
+
+    <p>提出件数：{teacherData.length}件</p>
+
+    {teacherData.map((item) => (
+      <div key={item.id} className="history">
+        <p>
+          <strong>
+            {item.className || "クラス未入力"} / {item.studentName || "名前未入力"}
+          </strong>
+        </p>
+
+        <p>級：{item.level}</p>
+        <p>形式：{item.taskType}</p>
+        <p>問題：{item.topic}</p>
+        <p>得点：{item.score}</p>
+        <p>語数：{item.words}</p>
+
+        {item.aiComment && (
+          <p>AI総評：{item.aiComment}</p>
+        )}
+      </div>
+    ))}
+  </section>
+)}
     </main>
   );
 }
