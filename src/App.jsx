@@ -53,8 +53,6 @@ const tasks = {
     { id:'p1-opinion-3', type:'opinion', title:'準1級 意見論述 3：宇宙開発', wordRange:'120〜150語', targetMin:120, targetMax:150, question:'Is spending public money on space exploration worthwhile?', points:['science','economy','environment','priorities'], model:'I believe spending public money on space exploration is worthwhile, but it should be carefully controlled. First, space programs lead to scientific progress and new technologies. Some technologies developed for space can later be used in daily life, medicine, and disaster prevention. Second, space projects can create jobs and encourage young people to study science. However, governments also have urgent problems on Earth, such as poverty and environmental damage. If too much money is spent on space, citizens may feel that their needs are ignored. Therefore, space exploration should continue, but governments must balance it with social responsibilities.' }
   ]
 };
-const [teacherMode, setTeacherMode] = useState(false);
-const [teacherData, setTeacherData] = useState([]);
 
 function countWords(text) { const words = text.trim().match(/[A-Za-z]+(?:'[A-Za-z]+)?/g); return words ? words.length : 0; }
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
@@ -152,8 +150,9 @@ export default function App() {
 
   const [aiFeedback, setAiFeedback] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
-// const [teacherMode, setTeacherMode] = useState(false);
-// const [teacherData, setTeacherData] = useState([]);
+ 
+  const [teacherMode, setTeacherMode] = useState(false);
+ const [teacherData, setTeacherData] = useState([]);
   const taskList = tasks[level];
   const selectedTask = taskList.find((t) => t.id === taskId) || taskList[0];
 
@@ -694,25 +693,27 @@ export default function App() {
             <Check ok={analysis.inRange} text="語数が目安内" />
           </section>
 
-          <section className="card">
-            <h2>保存履歴</h2>
+        <section className="card">
+  <h2>保存履歴</h2>
 
-            {history.length === 0 && <p>まだ保存履歴はありません。</p>}
+  {history.length === 0 && <p>まだ保存履歴はありません。</p>}
 
-            {history.slice(0, 6).map((h) => (
-              <div className="history" key={h.id}>
-                <b>
-                  {h.className} / {h.studentName}
-                </b>
-                <p>
-                  {h.level}・{h.taskType}・{h.score}/{h.maxScore}・{h.words}{" "}
-                  words
-                </p>
-                {h.aiComment && <p>AI総評：{h.aiComment}</p>}
-                <small>{h.time}</small>
-              </div>
-            ))}
-          </section>
+  {history.slice(0, 6).map((h) => (
+    <div className="history" key={h.id}>
+      <b>
+        {h.className} / {h.studentName}
+      </b>
+
+      <p>
+        {h.level}・{h.taskType}・{h.score}/{h.maxScore}・{h.words} words
+      </p>
+
+      {h.aiComment && <p>AI総評：{h.aiComment}</p>}
+
+      <small>{h.time}</small>
+    </div>
+  ))}
+</section>
         </aside>
       </div>
 
