@@ -964,14 +964,13 @@ async function submitWithAi() {
               <>
                 <Check ok={analysis.wordCount > 0} text="返信を書いている" />
                 <Check ok={analysis.checks.hasQuestion} text="疑問文がある" />
-                <Check
-                  ok={
-                    selectedTask.id.includes("g3")
-                      ? true
-                      : analysis.checks.hasTwoQuestions
-                  }
-                  text="必要な質問数を意識している"
-                />
+             <Check
+  ok={
+    analysis.wordCount > 0 &&
+    analysis.checks.hasTwoQuestions
+  }
+  text="必要な質問数を意識している"
+/>
               </>
             )}
 
