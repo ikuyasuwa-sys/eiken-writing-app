@@ -156,6 +156,9 @@ export default function App() {
   const [teacherSearch, setTeacherSearch] = useState("");
 const [classFilter, setClassFilter] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submittedAt, setSubmittedAt] = useState("");
+  const [submissionCount, setSubmissionCount] =
+  useState(0);
   const taskList = tasks[level];
   const selectedTask = taskList.find((t) => t.id === taskId) || taskList[0];
 
@@ -344,8 +347,15 @@ const classSummary = classOptions.map((className) => {
         createdAt: new Date()
       }
     );
+const now = new Date().toLocaleString("ja-JP");
+
 setSubmitted(true);
-    alert("Firebaseに保存しました");
+setSubmittedAt(now);
+setSubmissionCount(
+(prev) => prev + 1
+);
+    
+alert("提出しました");
   } catch (error) {
     alert(error.message);
   }
@@ -636,11 +646,12 @@ setSubmitted(true);
               </strong>
             </div>
 
-            <textarea
-              value={essay}
-              onChange={(e) => setEssay(e.target.value)}
-              placeholder="Write your answer here..."
-            />
+           <textarea
+  value={essay}
+  readOnly={submitted}
+  onChange={(e) => setEssay(e.target.value)}
+  placeholder="Write your answer here..."
+/>
 
             <div className="actions">
               <button onClick={saveToFirebase}>
@@ -662,7 +673,9 @@ setSubmitted(true);
             </div>
 {submitted && (
   <div className="history">
-    ✅ 提出済み
+    <p>✅ 提出済み</p>
+    <p>提出日時：{submittedAt}</p>
+    <p>提出回数：{submissionCount}回</p>
   </div>
 )}
             {showModel && (
