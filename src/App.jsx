@@ -319,7 +319,7 @@ const classSummary = classOptions.map((className) => {
     id: Date.now(),
     time: new Date().toLocaleString("ja-JP"),
     className: className || "未入力",
-    studentnumber: studentnumber || "未入力",
+    studentNumber: studentNumber || "未入力",
     level: levelLabels[level],
     taskType: taskLabels[selectedTask.type],
     topic: selectedTask.title,
@@ -569,7 +569,7 @@ async function submitWithAi() {
       collection(db, "submissions"),
       {
         className,
-        studentnumber,
+        studentNumber,
         level: levelLabels[level],
         taskType: taskLabels[selectedTask.type],
         topic: selectedTask.title,
@@ -961,7 +961,7 @@ async function submitWithAi() {
     <summary className="submissionSummary">
       <strong>
        {item.className || "クラス未入力"} /{" "}
-        {item.studentnumber || "番号未入力"}番
+        {item.studentNumber || "番号未入力"}番
       </strong>
       <span>
         {item.level}・{item.score}点・{item.words}語
@@ -1085,7 +1085,7 @@ async function submitWithAi() {
         <p>
           <strong>
             {item.className || "クラス未入力"} /{" "}
-            {item.studentnumber || "番号未入力"}
+            {item.studentNumber || "番号未入力"}
           </strong>
         </p>
 
