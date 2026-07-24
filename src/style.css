@@ -263,3 +263,38 @@ progress {
     grid-template-columns: 1fr;
   }
 }
+.submissionSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 8px 0;
+}
+
+.submissionSummary span {
+  font-size: 15px;
+  color: #475569;
+  font-weight: 700;
+}
+
+.submissionDetail {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #cbd5e1;
+}
+
+.innerDetails {
+  margin-top: 12px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+}
+
+.innerDetails summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: #1d4ed8;
+}
