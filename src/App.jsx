@@ -279,48 +279,6 @@ const displayMaxTotal =
   selectedTask.type === "email" ? 9 : 16;
 
 
-  const matchesName =
-    !teacherSearch ||
-    String(item.studentNumber || "")
-      .toLowerCase()
-      .includes(teacherSearch.toLowerCase());
-
-  const matchesClass =
-    !classFilter ||
-    String(item.className || "") === classFilter;
-
-  return matchesName && matchesClass;
-});
-
-const totalSubmissions = filteredTeacherData.length;
-
-const averageScore =
-  totalSubmissions > 0
-    ? (
-        filteredTeacherData.reduce(
-          (sum, item) => sum + Number(item.score || 0),
-          0
-        ) / totalSubmissions
-      ).toFixed(1)
-    : "0.0";
-
-const averageWords =
-  totalSubmissions > 0
-    ? Math.round(
-        filteredTeacherData.reduce(
-          (sum, item) => sum + Number(item.words || 0),
-          0
-        ) / totalSubmissions
-      )
-    : 0;
-
-const classOptions = [
-  ...new Set(
-    teacherData
-      .map((item) => item.className)
-      .filter(Boolean)
-  )
-];
 const studentNumbers = Array.from(
   { length: 40 },
   (_, i) => i + 1
