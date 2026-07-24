@@ -645,7 +645,11 @@ alert("提出しました");
                 {analysis.wordCount} words / {wordStatus}
               </strong>
             </div>
-
+{submitted && (
+  <div className="submittedBanner">
+    ✅ この答案は提出済みです
+  </div>
+)}
            <textarea
   value={essay}
   readOnly={submitted}
