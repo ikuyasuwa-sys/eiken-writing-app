@@ -153,6 +153,8 @@ export default function App() {
  
   const [teacherMode, setTeacherMode] = useState(false);
  const [teacherData, setTeacherData] = useState([]);
+  const [teacherSearch, setTeacherSearch] = useState("");
+const [classFilter, setClassFilter] = useState("");
   const taskList = tasks[level];
   const selectedTask = taskList.find((t) => t.id === taskId) || taskList[0];
 
@@ -181,6 +183,82 @@ export default function App() {
           ["vocabulary", "語彙", 4],
           ["grammar", "文法", 4]
         ];
+  const filteredTeacherData = teacherData.filter((item) => {
+  const matchesName =
+    !teacherSearch ||
+    String(item.studentName || "")
+      .toLowerCase()
+      .includes(teacherSearch.toLowerCase());
+
+  const matchesClass =
+    !classFilter ||
+    String(item.className || "") === classFilter;
+
+  return matchesName && matchesClass;
+});
+
+const totalSubmissions = filteredTeacherData.length;
+
+const averageScore =
+  totalSubmissions > 0
+    ? (
+        filteredTeacherData.reduce(
+          (sum, item) => sum + Number(item.score || 0),
+          0
+        ) / totalSubmissions
+      ).toFixed(1)
+    : "0.0";
+
+const averageWords =
+  totalSubmissions > 0
+    ? Math.round(
+        filteredTeacherData.reduce(
+          (sum, item) => sum + Number(item.words || 0),
+          0
+        ) / totalSubmissions
+      )
+    : 0;
+
+const classOptions = [
+  ...new Set(
+    teacherData
+      .map((item) => item.className)
+      .filter(Boolean)
+  )
+];
+
+const classSummary = classOptions.map((className) => {
+  const records = teacherData.filter(
+    (item) => item.className === className
+  );
+
+  const avgScore =
+    records.length > 0
+      ? (
+          records.reduce(
+            (sum, item) => sum + Number(item.score || 0),
+            0
+          ) / records.length
+        ).toFixed(1)
+      : "0.0";
+
+  const avgWords =
+    records.length > 0
+      ? Math.round(
+          records.reduce(
+            (sum, item) => sum + Number(item.words || 0),
+            0
+          ) / records.length
+        )
+      : 0;
+
+  return {
+    className,
+    count: records.length,
+    avgScore,
+    avgWords
+  };
+});
 
   function changeLevel(nextLevel) {
     setLevel(nextLevel);
@@ -292,7 +370,8 @@ export default function App() {
   }
 }
   function downloadCsv() {
-  const header = [
+  
+    const header = [
     "日時",
     "クラス",
     "生徒名",
@@ -354,6 +433,46 @@ export default function App() {
   const a = document.createElement("a");
   a.href = url;
   a.download = "eiken-writing-results.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+  function downloadTeacherCsv() {
+  const header = [
+    "クラス",
+    "生徒名",
+    "級",
+    "形式",
+    "問題",
+    "得点",
+    "語数",
+    "英文",
+    "AI総評"
+  ];
+
+  const rows = filteredTeacherData.map((item) => [
+    item.className || "",
+    item.studentName || "",
+    item.level || "",
+    item.taskType || "",
+    item.topic || "",
+    item.score || "",
+    item.words || "",
+    item.essay || "",
+    item.aiComment || ""
+  ]);
+
+  const csv = [header, ...rows]
+    .map((row) => row.map(csvEscape).join(","))
+    .join("\n");
+
+  const blob = new Blob(["\ufeff" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "teacher-submissions.csv";
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -764,6 +883,125 @@ export default function App() {
 
         {item.aiComment && (
           <p>AI総評：{item.aiComment}</p>
+        )}
+      </div>
+    ))}
+  </section>
+)}
+   {teacherMode && (
+  <section className="card">
+    <h2>先生モード：提出管理</h2>
+
+    <div className="grid2">
+      <div className="history">
+        <strong>提出件数</strong>
+        <p>{totalSubmissions}件</p>
+      </div>
+
+      <div className="history">
+        <strong>平均点</strong>
+        <p>{averageScore}点</p>
+      </div>
+
+      <div className="history">
+        <strong>平均語数</strong>
+        <p>{averageWords}語</p>
+      </div>
+
+      <div className="history">
+        <strong>全データ件数</strong>
+        <p>{teacherData.length}件</p>
+      </div>
+    </div>
+
+    <div className="grid2" style={{ marginTop: "16px" }}>
+      <label>
+        生徒名検索
+        <input
+          value={teacherSearch}
+          onChange={(e) => setTeacherSearch(e.target.value)}
+          placeholder="例：山田"
+        />
+      </label>
+
+      <label>
+        クラス絞り込み
+        <select
+          value={classFilter}
+          onChange={(e) => setClassFilter(e.target.value)}
+        >
+          <option value="">すべてのクラス</option>
+          {classOptions.map((className) => (
+            <option key={className} value={className}>
+              {className}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+
+    <div className="actions" style={{ marginTop: "16px" }}>
+      <button
+        onClick={loadSubmissions}
+      >
+        最新データを読み込む
+      </button>
+
+      <button
+        className="success"
+        onClick={downloadTeacherCsv}
+        disabled={filteredTeacherData.length === 0}
+      >
+        先生用CSV出力
+      </button>
+    </div>
+
+    <h3>クラス別集計</h3>
+
+    {classSummary.map((item) => (
+      <div key={item.className} className="history">
+        <p>
+          <strong>{item.className}</strong>
+        </p>
+        <p>提出数：{item.count}件</p>
+        <p>平均点：{item.avgScore}点</p>
+        <p>平均語数：{item.avgWords}語</p>
+      </div>
+    ))}
+
+    <h3>提出一覧</h3>
+
+    {filteredTeacherData.length === 0 && (
+      <p>表示する提出データがありません。</p>
+    )}
+
+    {filteredTeacherData.map((item) => (
+      <div key={item.id} className="history">
+        <p>
+          <strong>
+            {item.className || "クラス未入力"} /{" "}
+            {item.studentName || "名前未入力"}
+          </strong>
+        </p>
+
+        <p>級：{item.level}</p>
+        <p>形式：{item.taskType}</p>
+        <p>問題：{item.topic}</p>
+        <p>得点：{item.score}</p>
+        <p>語数：{item.words}</p>
+
+        {item.essay && (
+          <details>
+            <summary>英文を見る</summary>
+            <p>{item.essay}</p>
+          </details>
+        )}
+
+        {item.aiComment && (
+          <details>
+            <summary>AI総評を見る</summary>
+            <p>{item.aiComment}</p>
+          </details>
         )}
       </div>
     ))}
