@@ -320,3 +320,11 @@ textarea:disabled {
   margin-bottom: 12px;
   font-weight: 700;
 }
+select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 2px solid #334155;
+  font-size: 16px;
+  background: white;
+}
