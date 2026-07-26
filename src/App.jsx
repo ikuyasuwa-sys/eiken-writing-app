@@ -288,33 +288,7 @@ const studentNumbers = Array.from(
     (item) => item.className === className
   );
 
-  const avgScore =
-    records.length > 0
-      ? (
-          records.reduce(
-            (sum, item) => sum + Number(item.score || 0),
-            0
-          ) / records.length
-        ).toFixed(1)
-      : "0.0";
-
-  const avgWords =
-    records.length > 0
-      ? Math.round(
-          records.reduce(
-            (sum, item) => sum + Number(item.words || 0),
-            0
-          ) / records.length
-        )
-      : 0;
-
-  return {
-    className,
-    count: records.length,
-    avgScore,
-    avgWords
-  };
-});
+ 
 
   function changeLevel(nextLevel) {
     setLevel(nextLevel);
