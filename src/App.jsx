@@ -284,10 +284,6 @@ const studentNumbers = Array.from(
   (_, i) => i + 1
 );
 
-  const records = teacherData.filter(
-    (item) => item.className === className
-  );
-
  
 
   function changeLevel(nextLevel) {
