@@ -627,7 +627,9 @@ setAiFeedback(feedback);
     <main className="app">
       <section className="hero card">
         <div>
-          <p className="eyebrow">英検ライティング問題演習</p>
+          <p className="eyebrow">
+  ✏️ 英検ライティング問題演習
+</p>
          
           <p>
             自分の練習したい級と問題タイプを選び、英文を入力しましょう。
