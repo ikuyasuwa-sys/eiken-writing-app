@@ -522,26 +522,58 @@ async function submitWithAi() {
     const feedback = data.feedback;
 
     setAiFeedback(feedback);
+const feedback = data.feedback;
 
+const savedScores = {
+  content: Number(feedback?.score?.content || 0),
+  organization: Number(feedback?.score?.organization || 0),
+  vocabulary: Number(feedback?.score?.vocabulary || 0),
+  grammar: Number(feedback?.score?.grammar || 0)
+};
+
+const savedTotal =
+  selectedTask.type === "email"
+    ? savedScores.content +
+      savedScores.vocabulary +
+      savedScores.grammar
+    : savedScores.content +
+      savedScores.organization +
+      savedScores.vocabulary +
+      savedScores.grammar;
+
+const savedMaxTotal =
+  selectedTask.type === "email" ? 9 : 16;
+
+setAiFeedback(feedback);
     await addDoc(
-      collection(db, "submissions"),
-      {
-        className,
-        studentNumber,
-        level: levelLabels[level],
-        taskType: taskLabels[selectedTask.type],
-        topic: selectedTask.title,
-        score: analysis.total,
-        words: analysis.wordCount,
-        essay,
+  collection(db, "submissions"),
+  {
+    className,
+    studentNumber,
+    studentId: `${className}-${studentNumber}`,
 
-        aiComment:
-          feedback?.overallComment || "",
+    level: levelLabels[level],
+    taskType: taskLabels[selectedTask.type],
+    topic: selectedTask.title,
 
-        createdAt: new Date()
-      }
-    );
+    score: savedTotal,
+    maxScore: savedMaxTotal,
 
+    aiScoreContent: savedScores.content,
+    aiScoreOrganization: savedScores.organization,
+    aiScoreVocabulary: savedScores.vocabulary,
+    aiScoreGrammar: savedScores.grammar,
+
+    words: analysis.wordCount,
+    wordRange: selectedTask.wordRange,
+
+    essay,
+
+    aiComment: feedback?.overallComment || "",
+
+    createdAt: new Date()
+  }
+);
     const now =
       new Date().toLocaleString("ja-JP");
 
