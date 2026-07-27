@@ -1,6 +1,6 @@
 :root {
-  color: #0f172a;
-  background: #e0f2fe;
+  color: #052e16;
+  background: #ecfdf5;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
@@ -10,12 +10,13 @@
 }
 
 body {
-  background: linear-gradient(
-    180deg,
-    #eef6ff,
-    #f8fbff
-  );
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(187, 247, 208, 0.55), transparent 32%),
+    linear-gradient(180deg, #ecfdf5, #f7fee7);
 }
+
+/* 全体 */
 .app {
   max-width: 1280px;
   margin: 0 auto;
@@ -24,28 +25,57 @@ body {
   line-height: 1.7;
 }
 
+/* カード共通 */
 .card {
-  background: #ffffff;
-  border: 2px solid #e0e7ff;
-  border-radius: 24px;
-  box-shadow: 0 8px 24px rgba(59,130,246,0.08);
+  background: rgba(255, 255, 255, 0.96);
+  border: 2px solid #bbf7d0;
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 10px 28px rgba(22, 101, 52, 0.10);
 }
 
+/* ヘッダー */
 .hero {
   display: flex;
   justify-content: space-between;
   gap: 24px;
   align-items: center;
   margin-bottom: 24px;
+
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: white;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  top: -80px;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
 }
 
 .eyebrow {
   font-size: 32px;
   font-weight: 900;
+  color: white;
+  margin: 0;
 }
 
 .hero h1 {
   font-size: 28px;
+  color: #dcfce7;
+  margin: 8px 0;
+}
+
+.hero p {
+  color: #f0fdf4;
+  margin-bottom: 0;
 }
 
 h1 {
@@ -57,14 +87,16 @@ h1 {
 h2 {
   margin: 0 0 12px;
   font-size: 24px;
+  color: #064e3b;
 }
 
 h3 {
   margin: 14px 0 6px;
   font-size: 18px;
-  color: #334155;
+  color: #166534;
 }
 
+/* レイアウト */
 .layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -84,23 +116,51 @@ h3 {
   gap: 16px;
 }
 
+.grid3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+/* 入力欄 */
 label {
   font-weight: 800;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  color: #064e3b;
 }
 
 input,
 select,
 textarea {
   width: 100%;
-  border: 2px solid #334155;
-  border-radius: 16px;
-  padding: 14px;
+  border: 2px solid #86efac;
+  border-radius: 18px;
+  padding: 14px 16px;
   font-size: 18px;
-  color: #020617;
+  color: #052e16;
   background: #ffffff;
+  font-family: inherit;
+}
+
+select {
+  height: 56px;
+  appearance: none;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #22c55e;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
 }
 
 textarea {
@@ -109,35 +169,57 @@ textarea {
   resize: vertical;
 }
 
+/* 提出後の入力欄 */
+textarea:disabled,
+.submittedEssay {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 2px solid #22c55e;
+  cursor: not-allowed;
+}
+
+.submittedEssay:focus {
+  outline: none;
+}
+
+/* ボタン */
 button {
   border: 0;
   border-radius: 999px;
-  padding: 12px 18px;
-  background: #2563eb;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #16a34a, #15803d);
   color: white;
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
+  box-shadow: 0 6px 14px rgba(22, 163, 74, 0.25);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.30);
 }
 
 button.active {
-  background: #1d4ed8;
-  box-shadow: 0 0 0 4px #bfdbfe;
+  background: #047857;
+  box-shadow: 0 0 0 4px #bbf7d0;
 }
 
 button.secondary {
-  background: #475569;
+  background: #64748b;
 }
 
 button.success {
-  background: #059669;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
 }
 
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
+/* ボタン・チップ類 */
 .levelButtons,
 .actions,
 .chips,
@@ -147,10 +229,11 @@ button:disabled {
   gap: 10px;
 }
 
+/* 問題表示 */
 .problemBox {
-  background: #f8fafc;
-  border: 2px solid #e2e8f0;
-  border-radius: 20px;
+  background: #f0fdf4;
+  border: 2px solid #bbf7d0;
+  border-radius: 22px;
   padding: 20px;
   margin-top: 16px;
 }
@@ -158,23 +241,26 @@ button:disabled {
 .chips span,
 .points span {
   background: #ffffff;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #86efac;
   border-radius: 999px;
   padding: 6px 12px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
+  color: #166534;
 }
 
 .question {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 900;
+  color: #052e16;
 }
 
+/* E-mail / Passage / AI結果 */
 .prompt,
 .model {
-  background: #eff6ff;
-  border: 2px solid #bfdbfe;
-  border-radius: 18px;
+  background: #ecfdf5;
+  border: 2px solid #bbf7d0;
+  border-radius: 20px;
   padding: 16px;
   margin-top: 14px;
 }
@@ -186,13 +272,21 @@ button:disabled {
   gap: 12px;
 }
 
+/* スコアカード */
 .scoreCard {
-  background: #0f172a;
+  background: linear-gradient(160deg, #052e16, #14532d);
   color: #ffffff;
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 12px 28px rgba(5, 46, 22, 0.22);
 }
 
 .scoreCard * {
   color: #ffffff;
+}
+
+.scoreCard p::before {
+  content: "🏆 ";
 }
 
 .scoreCard strong {
@@ -208,26 +302,39 @@ progress {
   width: 100%;
   height: 16px;
   margin-top: 16px;
+  accent-color: #22c55e;
 }
 
+/* チェック項目 */
 .check {
   margin: 8px 0;
-  font-weight: 700;
+  font-weight: 800;
   color: #64748b;
 }
 
 .check.ok {
-  color: #047857;
+  color: #16a34a;
 }
 
+/* 履歴・提出済み */
 .history {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 18px;
+  padding: 14px;
   margin-top: 10px;
 }
 
+.submittedBanner {
+  background: #dcfce7;
+  color: #166534;
+  padding: 12px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  font-weight: 800;
+}
+
+/* 観点別スコア */
 .rubricGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -237,119 +344,15 @@ progress {
 
 .rubricCard {
   background: #ffffff;
-  border: 2px solid #cbd5e1;
-  border-radius: 22px;
+  border: 2px solid #bbf7d0;
+  border-radius: 24px;
   padding: 20px;
+  box-shadow: 0 8px 20px rgba(22, 101, 52, 0.08);
 }
 
 .rubricCard strong {
   font-size: 24px;
-  background: #f1f5f9;
-  border-radius: 12px;
-  padding: 6px 10px;
-}
-
-@media (max-width: 900px) {
-  .app {
-    padding: 16px;
-    font-size: 17px;
-  }
-
-  .hero,
-  .layout,
-  .grid2 {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .rubricGrid {
-    grid-template-columns: 1fr;
-  }
-}
-.submissionSummary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  font-weight: 800;
-  padding: 8px 0;
-}
-
-.submissionSummary span {
-  font-size: 15px;
-  color: #475569;
-  font-weight: 700;
-}
-
-.submissionDetail {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #cbd5e1;
-}
-
-.innerDetails {
-  margin-top: 12px;
-  padding: 12px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-}
-
-.innerDetails summary {
-  cursor: pointer;
-  font-weight: 800;
-  color: #1d4ed8;
-}
-textarea:disabled {
-  background: #f1f5f9;
-  color: #64748b;
-  cursor: not-allowed;
-}
-.submittedEssay {
-  background-color: #dcfce7;
-  color: #166534;
-  border: 2px solid #22c55e;
-}
-
-.submittedEssay:focus {
-  outline: none;
-}
-.submittedBanner {
   background: #dcfce7;
   color: #166534;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  font-weight: 700;
-}
-select {
-  width: 100%;
-  height: 54px;
-
-  padding: 0 16px;
-
-  border: 2px solid #334155;
-  border-radius: 18px;
-
-  background: white;
-
-  font-size: 18px;
-  font-family: inherit;
-
-  appearance: none;
-}
-select:hover {
-  border-color: #2563eb;
-}
-
-select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-.grid3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-}
+  border-radius: 14px;
+  padding: 6px 10px;
