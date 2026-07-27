@@ -372,7 +372,6 @@ if (!studentNumber) {
         topic: selectedTask.title,
        score: displayTotal,
 maxScore: displayMaxTotal,
-words: analysis.wordCount,
 
 aiScoreContent: displayScores.content,
 aiScoreOrganization: displayScores.organization,
