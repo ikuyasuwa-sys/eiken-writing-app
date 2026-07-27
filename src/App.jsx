@@ -759,7 +759,7 @@ setAiFeedback(feedback);
             </div>
 {submitted && (
   <div className="submittedBanner">
-    ✅ この答案は提出済みです
+    ✅ 添削が完了しました。
   </div>
 )}
            <textarea
@@ -775,7 +775,7 @@ setAiFeedback(feedback);
   onClick={submitWithAi}
   disabled={aiLoading || !selectedTask}
 >
-  {aiLoading ? "添削・提出中..." : "添削して提出"}
+  {aiLoading ? "添削中..." : "添削"}
 </button>
               
               <button
@@ -789,9 +789,9 @@ setAiFeedback(feedback);
             </div>
 {submitted && (
   <div className="history">
-    <p>✅ 提出済み</p>
-    <p>提出日時：{submittedAt}</p>
-    <p>提出回数：{submissionCount}回</p>
+    <p>✅ 添削済み</p>
+    <p>添削日時：{submittedAt}</p>
+    <p>添削回数：{submissionCount}回</p>
   </div>
 )}
             {showModel && (
