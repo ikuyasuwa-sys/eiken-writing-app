@@ -607,20 +607,14 @@ setAiFeedback(feedback);
 
           {levels.map((lv) => (
       
-            <button
-              key={lv}
-              className={level === lv ? "active" : ""}
-              onClick={() => changeLevel(lv)}
-            >
-              {levelLabels[lv]}
-            </button>
+        
           ))}
         </div>
       </section>
 
       <div className="layout">
         <section className="mainColumn">
-          <div className="card grid2">
+          <div className="card grid3">
                <label>
   クラス
   <select
@@ -659,6 +653,20 @@ setAiFeedback(feedback);
         {num}
       </option>
     ))}
+  </select>
+</label>
+<label>
+  級
+
+  <select
+    value={level}
+    onChange={(e) => changeLevel(e.target.value)}
+  >
+    <option value="grade3">3級</option>
+    <option value="pre2">準2級</option>
+    <option value="pre2plus">準2級プラス</option>
+    <option value="grade2">2級</option>
+    <option value="pre1">準1級</option>
   </select>
 </label>
 
