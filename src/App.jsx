@@ -352,7 +352,7 @@ const studentNumbers = Array.from(
     className: className || "未入力",
     studentNumber: studentNumber || "未入力",
     level: levelLabels[level],
-    taskType: taskLabels[selectedTask.type],
+    taskType: taskLabels[selectedtask?.type],
     topic: selectedTask.title,
     score: analysis.total,
     maxScore: analysis.maxTotal,
@@ -398,7 +398,7 @@ if (!studentNumber) {
         studentId:
   `${className}-${studentNumber}`,
         level: levelLabels[level],
-        taskType: taskLabels[selectedTask.type],
+        taskType: taskLabels[selectedtask?.type],
         topic: selectedTask.title,
        score: displayTotal,
 maxScore: displayMaxTotal,
@@ -488,7 +488,7 @@ alert("提出しました");
         },
         body: JSON.stringify({
           level: levelLabels[level],
-          taskType: taskLabels[selectedTask.type],
+          taskType: taskLabels[selectedtask?.type],
           question: selectedTask.question,
           passage: selectedTask.passage,
           email: selectedTask.email,
@@ -534,7 +534,7 @@ async function submitWithAi() {
       },
       body: JSON.stringify({
         level: levelLabels[level],
-        taskType: taskLabels[selectedTask.type],
+        taskType: taskLabels[selectedtask?.type],
         question: selectedTask.question,
         passage: selectedTask.passage,
         email: selectedTask.email,
@@ -564,7 +564,7 @@ const savedScores = {
 };
 
 const savedTotal =
-  selectedTask.type === "email"
+  selectedtask?.type === "email"
     ? savedScores.content +
       savedScores.vocabulary +
       savedScores.grammar
@@ -574,7 +574,7 @@ const savedTotal =
       savedScores.grammar;
 
 const savedMaxTotal =
-  selectedTask.type === "email" ? 9 : 16;
+  selectedtask?.type === "email" ? 9 : 16;
 
 setAiFeedback(feedback);
     await addDoc(
@@ -585,7 +585,7 @@ setAiFeedback(feedback);
     studentId: `${className}-${studentNumber}`,
 
     level: levelLabels[level],
-    taskType: taskLabels[selectedTask.type],
+    taskType: taskLabels[selectedtask?.type],
     topic: selectedTask.title,
 
     score: savedTotal,
@@ -719,7 +719,7 @@ setAiFeedback(feedback);
     <div className="problemBox">
       <div className="chips">
         <span>{levelLabels[level]}</span>
-        <span>{taskLabels[selectedTask.type]}</span>
+        <span>{taskLabels[selectedtask?.type]}</span>
         <span>語数：{selectedTask.wordRange}</span>
         <span>この級の問題数：{taskList.length}問</span>
       </div>
@@ -904,7 +904,7 @@ setAiFeedback(feedback);
           <section className="card">
             <h2>チェック項目</h2>
 
-            {selectedTask.type === "opinion" && (
+            {selectedtask?.type === "opinion" && (
               <>
                 <Check ok={analysis.checks.hasOpinion} text="自分の意見がある" />
                 <Check ok={analysis.checks.hasFirst} text="First が使えている" />
@@ -916,7 +916,7 @@ setAiFeedback(feedback);
               </>
             )}
 
-            {selectedTask.type === "email" && (
+            {selectedtask?.type === "email" && (
               <>
                 <Check ok={analysis.wordCount > 0} text="返信を書いている" />
                 <Check ok={analysis.checks.hasQuestion} text="疑問文がある" />
@@ -930,7 +930,7 @@ setAiFeedback(feedback);
               </>
             )}
 
-            {selectedTask.type === "summary" && (
+            {selectedtask?.type === "summary" && (
               <>
                 <Check ok={analysis.wordCount > 0} text="要約を書いている" />
                 <Check
