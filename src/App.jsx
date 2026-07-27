@@ -378,6 +378,8 @@ aiScoreContent: displayScores.content,
 aiScoreOrganization: displayScores.organization,
 aiScoreVocabulary: displayScores.vocabulary,
 aiScoreGrammar: displayScores.grammar,
+words: analysis.wordCount,
+wordRange: selectedTask.wordRange,
         essay,
 
         aiComment:
