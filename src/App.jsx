@@ -521,8 +521,6 @@ async function submitWithAi() {
 
     const feedback = data.feedback;
 
-    setAiFeedback(feedback);
-const feedback = data.feedback;
 
 const savedScores = {
   content: Number(feedback?.score?.content || 0),
