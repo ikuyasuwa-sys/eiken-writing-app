@@ -202,8 +202,8 @@ function feedback(key, score, max, type) {
 function csvEscape(value) { return `"${String(value).replaceAll('"','""')}"`; }
 
 export default function App() {
-  const [level, setLevel] = useState("grade3");
-  const [taskId, setTaskId] = useState("g3-email-1");
+  const [level, setLevel] = useState("");
+const [taskId, setTaskId] = useState("");
   const [studentNumber, setStudentNumber] =  useState("");
   const [className, setClassName] = useState("");
   const [essay, setEssay] = useState("");
@@ -220,9 +220,9 @@ export default function App() {
   const [submittedAt, setSubmittedAt] = useState("");
   const [submissionCount, setSubmissionCount] =
   useState(0);
-  const taskList = tasks[level];
-  const selectedTask = taskList.find((t) => t.id === taskId) || taskList[0];
-
+  const taskList = level ? tasks[level] : [];
+const selectedTask =
+  taskList.find((t) => t.id === taskId) || taskList[0] || null;
   const analysis = useMemo(
     () => analyzeEssay(essay, selectedTask, level),
     [essay, selectedTask, level]
@@ -287,14 +287,22 @@ const studentNumbers = Array.from(
  
 
   function changeLevel(nextLevel) {
-    setLevel(nextLevel);
-    const firstTask = tasks[nextLevel][0];
-    setTaskId(firstTask.id);
+  setLevel(nextLevel);
+
+  if (!nextLevel) {
+    setTaskId("");
     setEssay("");
     setShowModel(false);
     setAiFeedback(null);
+    return;
   }
 
+  const firstTask = tasks[nextLevel][0];
+  setTaskId(firstTask.id);
+  setEssay("");
+  setShowModel(false);
+  setAiFeedback(null);
+}
   function changeTask(nextTaskId) {
     const nextTask = taskList.find((t) => t.id === nextTaskId) || taskList[0];
     setTaskId(nextTask.id);
@@ -490,6 +498,10 @@ alert("提出しました");
     }
   }
 async function submitWithAi() {
+  if (!selectedTask) {
+  alert("級を選択してください。");
+  return;
+}
   try {
     setAiLoading(true);
 
@@ -594,7 +606,7 @@ setAiFeedback(feedback);
       <section className="hero card">
         <div>
           <p className="eyebrow">英検ライティング問題演習</p>
-          <h1>3級〜準1級</h1>
+         
           <p>
             自分の練習したい級と問題タイプを選び、英文を入力しましょう。
             入力ができたら提出ボタンを押して添削してもらいましょう。
@@ -648,62 +660,72 @@ setAiFeedback(feedback);
 <label>
   級
 
-  <select
-    value={level}
-    onChange={(e) => changeLevel(e.target.value)}
-  >
-    <option value="grade3">3級</option>
-    <option value="pre2">準2級</option>
-    <option value="pre2plus">準2級プラス</option>
-    <option value="grade2">2級</option>
-    <option value="pre1">準1級</option>
-  </select>
+ <select
+  value={level}
+  onChange={(e) => changeLevel(e.target.value)}
+>
+  <option value="">
+    級を選択してください
+  </option>
+
+  <option value="grade3">3級</option>
+  <option value="pre2">準2級</option>
+  <option value="pre2plus">準2級プラス</option>
+  <option value="grade2">2級</option>
+  <option value="pre1">準1級</option>
+</select>
 </label>
 
        
           </div>
 
-          <section className="card">
-            <h2>問題選択</h2>
+         {selectedTask ? (
+  <section className="card">
+    <h2>問題選択</h2>
 
-            <select
-              value={taskId}
-              onChange={(e) => changeTask(e.target.value)}
-            >
-              {taskList.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.title} / {taskLabels[t.type]}
-                </option>
-              ))}
-            </select>
+    <select
+      value={taskId}
+      onChange={(e) => changeTask(e.target.value)}
+    >
+      {taskList.map((t) => (
+        <option key={t.id} value={t.id}>
+          {t.title} / {taskLabels[t.type]}
+        </option>
+      ))}
+    </select>
 
-            <div className="problemBox">
-              <div className="chips">
-                <span>{levelLabels[level]}</span>
-                <span>{taskLabels[selectedTask.type]}</span>
-                <span>語数：{selectedTask.wordRange}</span>
-                <span>この級の問題数：{taskList.length}問</span>
-              </div>
+    <div className="problemBox">
+      <div className="chips">
+        <span>{levelLabels[level]}</span>
+        <span>{taskLabels[selectedTask.type]}</span>
+        <span>語数：{selectedTask.wordRange}</span>
+        <span>この級の問題数：{taskList.length}問</span>
+      </div>
 
-              <h3>QUESTION</h3>
-              <p className="question">{selectedTask.question}</p>
+      <h3>QUESTION</h3>
+      <p className="question">{selectedTask.question}</p>
 
-              {selectedTask.email && (
-                <Prompt title="E-mail" text={selectedTask.email} />
-              )}
+      {selectedTask.email && (
+        <Prompt title="E-mail" text={selectedTask.email} />
+      )}
 
-              {selectedTask.passage && (
-                <Prompt title="Passage" text={selectedTask.passage} />
-              )}
+      {selectedTask.passage && (
+        <Prompt title="Passage" text={selectedTask.passage} />
+      )}
 
-              <div className="points">
-                {selectedTask.points.map((p) => (
-                  <span key={p}>POINT: {p}</span>
-                ))}
-              </div>
-            </div>
-          </section>
-
+      <div className="points">
+        {selectedTask.points.map((p) => (
+          <span key={p}>POINT: {p}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+) : (
+  <section className="card">
+    <h2>問題選択</h2>
+    <p>先に級を選択してください。</p>
+  </section>
+)}
           <section className="card">
             <div className="rowBetween">
               <h2>解答入力</h2>
@@ -727,13 +749,11 @@ setAiFeedback(feedback);
   }
 />
             <div className="actions">
-             <button
+           <button
   onClick={submitWithAi}
-  disabled={aiLoading}
+  disabled={aiLoading || !selectedTask}
 >
-  {aiLoading
-    ? "添削・提出中..."
-    : "提出"}
+  {aiLoading ? "添削・提出中..." : "添削して提出"}
 </button>
               
               <button
