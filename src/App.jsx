@@ -705,7 +705,7 @@ setAiFeedback(feedback);
 
          {selectedTask ? (
   <section className="card">
-    <h2>問題選択</h2>
+    <h2>📖問題選択</h2>
 
     <select
       value={taskId}
