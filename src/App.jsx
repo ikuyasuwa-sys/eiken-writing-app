@@ -600,16 +600,6 @@ setAiFeedback(feedback);
             入力ができたら提出ボタンを押して添削してもらいましょう。
           </p>
         </div>
-
-      <div className="levelButtons">
-
-
-
-          {levels.map((lv) => (
-      
-        
-          ))}
-        </div>
       </section>
 
       <div className="layout">
