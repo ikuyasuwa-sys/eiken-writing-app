@@ -223,13 +223,36 @@ const [taskId, setTaskId] = useState("");
   const taskList = level ? tasks[level] : [];
 const selectedTask =
   taskList.find((t) => t.id === taskId) || taskList[0] || null;
-  const analysis = useMemo(
-    () => analyzeEssay(essay, selectedTask, level),
-    [essay, selectedTask, level]
-  );
+  const analysis = useMemo(() => {
+  if (!selectedTask) {
+    return {
+      scores: {
+        content: 0,
+        organization: 0,
+        vocabulary: 0,
+        grammar: 0
+      },
+      total: 0,
+      maxTotal: 16,
+      wordCount: 0,
+      inRange: false,
+      checks: {
+        hasOpinion: false,
+        hasFirst: false,
+        hasSecond: false,
+        hasConclusion: false,
+        hasQuestion: false,
+        hasTwoQuestions: false,
+        sentenceCount: 0
+      }
+    };
+  }
+
+  return analyzeEssay(essay, selectedTask, level);
+}, [essay, selectedTask, level]);
 
  const wordStatus =
-  analysis.wordCount === 0
+  !selectedTask || analysis.wordCount === 0
     ? "未入力"
     : analysis.wordCount < selectedTask.targetMin
     ? "少なめ"
@@ -238,18 +261,18 @@ const selectedTask =
     : "適正";
 
   const rubric =
-    selectedTask.type === "email"
-      ? [
-          ["content", "内容", 3],
-          ["vocabulary", "語彙", 3],
-          ["grammar", "文法", 3]
-        ]
-      : [
-          ["content", "内容", 4],
-          ["organization", "構成", 4],
-          ["vocabulary", "語彙", 4],
-          ["grammar", "文法", 4]
-        ];
+  selectedTask?.type === "email"
+    ? [
+        ["content", "内容", 3],
+        ["vocabulary", "語彙", 3],
+        ["grammar", "文法", 3]
+      ]
+    : [
+        ["content", "内容", 4],
+        ["organization", "構成", 4],
+        ["vocabulary", "語彙", 4],
+        ["grammar", "文法", 4]
+      ];
  const aiScores = aiFeedback?.score || null;
 
 const displayScores = aiScores
@@ -267,7 +290,7 @@ const displayScores = aiScores
     };
 
 const displayTotal =
-  selectedTask.type === "email"
+  selectedTask?.type === "email"
     ? displayScores.content +
       displayScores.vocabulary +
       displayScores.grammar
@@ -276,8 +299,7 @@ const displayTotal =
       displayScores.vocabulary +
       displayScores.grammar;
 const displayMaxTotal =
-  selectedTask.type === "email" ? 9 : 16;
-
+  selectedTask?.type === "email" ? 9 : 16;
 
 const studentNumbers = Array.from(
   { length: 40 },
