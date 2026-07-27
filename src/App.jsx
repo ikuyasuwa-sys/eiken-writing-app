@@ -616,7 +616,7 @@ setAiFeedback(feedback);
       (prev) => prev + 1
     );
 
-    alert("AI添削と提出が完了しました");
+    alert("添削が完了しました");
   } catch (error) {
     alert(error.message);
   } finally {
