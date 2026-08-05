@@ -207,7 +207,6 @@ const [taskId, setTaskId] = useState("");
   const [studentNumber, setStudentNumber] =  useState("");
   const [className, setClassName] = useState("");
   const [essay, setEssay] = useState("");
-``
   const [showModel, setShowModel] = useState(false);
   const [history, setHistory] = useState([]);
 
