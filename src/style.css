@@ -573,3 +573,72 @@ body::before {
     writing-mode: horizontal-tb !important;
   }
 }
+/* PC表示（画面幅769px以上）：従来の2列配置を維持 */
+@media screen and (min-width: 769px) {
+  .layout {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+/* スマホ表示（画面幅768px以下）：手書きスケッチ通りの完全縦1列 */
+@media screen and (max-width: 768px) {
+  /* 画面全体の横スクロールを強制防止 */
+  html, body, #root, .app {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 2列レイアウト（.layout）を強制的に1列化 */
+  .layout, 
+  div[class*="layout"] {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px !important;
+    gap: 16px !important;
+  }
+
+  /* メイン列・サイドバー列の固定幅を解除して100%化 */
+  .mainColumn, 
+  .sideColumn, 
+  section, 
+  aside {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* クラス・出席番号を横並び(2列)、級をその下に配置 */
+  .grid3,
+  div:has(> select) {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* 3番目の要素（級のドロップダウン）を全幅化 */
+  .grid3 > *:nth-child(3),
+  div:has(> select) > *:nth-child(3) {
+    grid-column: span 2 !important;
+  }
+
+  /* ドロップダウンと入力フォームの全幅・高さ指定 */
+  select, input, textarea {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important;
+  }
+
+  /* 縦書きになっていた要素（総合スコアなど）を横書きに戻す */
+  * {
+    writing-mode: horizontal-tb !important;
+  }
+}
