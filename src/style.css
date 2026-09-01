@@ -389,3 +389,43 @@ body::before {
 
   opacity: 0.15;
 }
+/* スマホ画面向けのレイアウト自動調整 */
+@media screen and (max-width: 768px) {
+  /* 全体の横幅オーバーを防ぎ、画面幅にフィットさせる */
+  body, html, #root {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  /* 2列レイアウトを強制的に縦1列（100%幅）にする */
+  div[style*="display: grid"],
+  div[style*="display:flex"],
+  .grid-container {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* クラス・番号・級のドロップダウンを横並びで綺麗に配置 */
+  .select-group,
+  div[style*="grid-template-columns: repeat(3"] {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+  }
+
+  /* 下部の4つの評価カード（内容・構成・語彙・文法）を2列×2行にする */
+  div[style*="grid-template-columns: repeat(4"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* 各カードの幅指定を画面幅に合わせる */
+  div, card {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
