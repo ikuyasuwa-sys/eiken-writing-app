@@ -1,8 +1,7 @@
 :root {
   color: #052e16;
   background: #ecfdf5;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * {
@@ -16,7 +15,21 @@ body {
     linear-gradient(180deg, #ecfdf5, #f7fee7);
 }
 
-/* 全体 */
+body::before {
+  content: "📚 ✏️ 📝 🌎 🎓";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 120px;
+  line-height: 300px;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 全体コンテナ */
 .app {
   max-width: 1280px;
   margin: 0 auto;
@@ -41,7 +54,6 @@ body {
   gap: 24px;
   align-items: center;
   margin-bottom: 24px;
-
   background: linear-gradient(135deg, #16a34a, #15803d);
   color: white;
   border: none;
@@ -58,6 +70,15 @@ body {
   height: 220px;
   background: rgba(255, 255, 255, 0.16);
   border-radius: 999px;
+}
+
+.hero::before {
+  content: "📚";
+  position: absolute;
+  right: 35px;
+  top: 10px;
+  font-size: 120px;
+  opacity: 0.15;
 }
 
 .eyebrow {
@@ -96,7 +117,7 @@ h3 {
   color: #166534;
 }
 
-/* レイアウト */
+/* 基本レイアウト（PC向け） */
 .layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -146,7 +167,6 @@ textarea {
 
 select {
   height: 56px;
-  appearance: none;
 }
 
 input:hover,
@@ -164,7 +184,7 @@ textarea:focus {
 }
 
 textarea {
-  min-height: 340px;
+  min-height: 240px;
   line-height: 1.7;
   resize: vertical;
 }
@@ -176,10 +196,6 @@ textarea:disabled,
   color: #166534;
   border: 2px solid #22c55e;
   cursor: not-allowed;
-}
-
-.submittedEssay:focus {
-  outline: none;
 }
 
 /* ボタン */
@@ -219,7 +235,6 @@ button:disabled {
   transform: none;
 }
 
-/* ボタン・チップ類 */
 .levelButtons,
 .actions,
 .chips,
@@ -255,7 +270,6 @@ button:disabled {
   color: #052e16;
 }
 
-/* E-mail / Passage / AI結果 */
 .prompt,
 .model {
   background: #ecfdf5;
@@ -290,12 +304,12 @@ button:disabled {
 }
 
 .scoreCard strong {
-  font-size: 64px;
+  font-size: 48px;
   line-height: 1;
 }
 
 .scoreCard span {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 progress {
@@ -316,24 +330,6 @@ progress {
   color: #16a34a;
 }
 
-/* 履歴・提出済み */
-.history {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 18px;
-  padding: 14px;
-  margin-top: 10px;
-}
-
-.submittedBanner {
-  background: #dcfce7;
-  color: #166534;
-  padding: 12px;
-  border-radius: 14px;
-  margin-bottom: 12px;
-  font-weight: 800;
-}
-
 /* 観点別スコア */
 .rubricGrid {
   display: grid;
@@ -350,294 +346,71 @@ progress {
   box-shadow: 0 8px 20px rgba(22, 101, 52, 0.08);
 }
 
+/* 修正点：閉じカッコを追加 */
 .rubricCard strong {
   font-size: 24px;
   background: #dcfce7;
   color: #166534;
   border-radius: 14px;
   padding: 6px 10px;
-body::before {
-  content: "📚 ✏️ 📝 🌎 🎓";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  font-size: 120px;
-  line-height: 300px;
-
-  opacity: 0.04;
-
-  pointer-events: none;
-
-  z-index: -1;
-}
-.hero {
-  position: relative;
-  overflow: hidden;
 }
 
-.hero::before {
-  content: "📚";
-  position: absolute;
-
-  right: 35px;
-  top: 10px;
-
-  font-size: 120px;
-
-  opacity: 0.15;
-}
-/* スマホ画面向けのレイアウト自動調整 */
+/* ==========================================
+   スマホ表示（幅768px以下）：スケッチ通りの完全1列化
+   ========================================== */
 @media screen and (max-width: 768px) {
-  /* 全体の横幅オーバーを防ぎ、画面幅にフィットさせる */
-  body, html, #root {
-    overflow-x: hidden !important;
-    width: 100% !important;
-  }
-
-  /* 2列レイアウトを強制的に縦1列（100%幅）にする */
-  div[style*="display: grid"],
-  div[style*="display:flex"],
-  .grid-container {
-    grid-template-columns: 1fr !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  /* クラス・番号・級のドロップダウンを横並びで綺麗に配置 */
-  .select-group,
-  div[style*="grid-template-columns: repeat(3"] {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 8px !important;
-  }
-
-  /* 下部の4つの評価カード（内容・構成・語彙・文法）を2列×2行にする */
-  div[style*="grid-template-columns: repeat(4"] {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
-  }
-
-  /* 各カードの幅指定を画面幅に合わせる */
-  div, card {
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
-}
-/* スマホ表示の個別調整 (幅768px以下) */
-@media screen and (max-width: 768px) {
-
-  /* クラス・出席番号・級の選択エリアを縦並びにする */
-  .select-group,
-  div[style*="grid-template-columns: repeat(3"],
-  div[style*="display: grid"] > div:has(select) {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-
-  /* セレクトボックス（ドロップダウン）を押しやすい高さと全幅に設定 */
-  select, input {
-    width: 100% !important;
-    height: 44px !important;
-    font-size: 16px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 総合スコアを横長カードとして独立した1行にする */
-  .score-card,
-  div:has(> *:contains("総合スコア")) {
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 16px 20px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 総合スコア内の文字サイズ調整 */
-  .score-card h3,
-  .score-card div {
-    writing-mode: horizontal-tb !important; /* 縦書きを解除して横書きにする */
-    font-size: 18px !important;
-  }
-
-  /* チェック項目カードも独立した1行にする */
-  div:has(> *:contains("チェック項目")) {
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-}
-/* スケッチに基づいた完全縦1列レイアウト (768px以下のスマホ表示) */
-@media screen and (max-width: 768px) {
-  /* 全体のコンテナを縦1列のFlexboxにし、順番をコントロール */
-  .container, 
-  main, 
-  div[style*="grid-template-columns"] {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    gap: 16px !important;
-    padding: 12px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* クラス・出席番号を横並び、級をその下に配置 */
-  .student-info-section,
-  div:has(> select) {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important; /* クラスと出席番号で2列 */
-    gap: 10px !important;
-  }
-
-  /* 「級」の入力枠だけ幅いっぱいに伸ばして下に配置 */
-  .student-info-section > div:nth-child(3),
-  div:has(> select) > div:nth-child(3) {
-    grid-column: span 2 !important;
-  }
-
-  /* セレクトボックスと入力フィールドの高さ・見やすさを調整 */
-  select, input, textarea {
-    width: 100% !important;
-    height: 44px !important;
-    font-size: 16px !important;
-    box-sizing: border-box !important;
-  }
-
-  textarea {
-    height: 180px !important; /* 解答入力エリアの高さ */
-  }
-
-  /* 下部のカード（チェック項目・総合スコア）を横幅いっぱいの単独ブロックにする */
-  .card, 
-  .score-card,
-  div[class*="card"] {
-    width: 100% !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-  }
-}
-/* 画面幅768px以下のスマホ表示時のみ適用 */
-@media screen and (max-width: 768px) {
-
-  /* 1. PC用の2列レイアウト（layout / mainColumn / sideColumn）を強制的に1列縦並びにする */
-  .layout,
-  div[class*="layout"] {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-  }
-
-  /* 2. 右側にあったサイドバー（チェック項目・総合スコア）をメイン領域の下にそのまま繋げる */
-  .sideColumn,
-  aside {
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  /* 3. 「クラス」「出席番号」を横並び、「級」をその下に配置 */
-  .card.grid3,
-  div:has(> select) {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
-  }
-
-  /* 3つ目の要素（級の選択肢）だけ横幅いっぱいに伸ばす */
-  .card.grid3 > *:nth-child(3),
-  div:has(> select) > *:nth-child(3) {
-    grid-column: span 2 !important;
-  }
-
-  /* 4. 入力枠やボタンの押しやすさをスマホ向けに調整 */
-  select, input {
-    width: 100% !important;
-    height: 44px !important;
-    font-size: 16px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 5. 総合スコアカードを縦書きではなく横長のカードにする */
-  .score-card,
-  div:has(> *:contains("総合スコア")) {
-    width: 100% !important;
-    writing-mode: horizontal-tb !important;
-  }
-}
-/* PC表示（画面幅769px以上）：従来の2列配置を維持 */
-@media screen and (min-width: 769px) {
-  .layout {
-    display: grid !important;
-    grid-template-columns: 2fr 1fr !important;
-    gap: 20px !important;
-  }
-}
-
-/* スマホ表示（画面幅768px以下）：手書きスケッチ通りの完全縦1列 */
-@media screen and (max-width: 768px) {
-  /* 画面全体の横スクロールを強制防止 */
+  /* 全体の余白・スクロール調整 */
   html, body, #root, .app {
     overflow-x: hidden !important;
     width: 100% !important;
+    padding: 12px !important;
     margin: 0 !important;
-    padding: 0 !important;
   }
 
-  /* 2列レイアウト（.layout）を強制的に1列化 */
-  .layout, 
-  div[class*="layout"] {
+  /* 2列（メイン・サイド）を解体して1列に接続 */
+  .layout {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 10px !important;
     gap: 16px !important;
   }
 
-  /* メイン列・サイドバー列の固定幅を解除して100%化 */
-  .mainColumn, 
-  .sideColumn, 
-  section, 
-  aside {
+  .mainColumn,
+  .sideColumn {
     width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 16px !important;
   }
 
-  /* クラス・出席番号を横並び(2列)、級をその下に配置 */
-  .grid3,
-  div:has(> select) {
+  /* クラス・出席番号を横並び(2列)、級をその下に全幅配置 */
+  .grid3 {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
+    gap: 12px !important;
   }
 
-  /* 3番目の要素（級のドロップダウン）を全幅化 */
-  .grid3 > *:nth-child(3),
-  div:has(> select) > *:nth-child(3) {
+  .grid3 > *:nth-child(3) {
     grid-column: span 2 !important;
   }
 
-  /* ドロップダウンと入力フォームの全幅・高さ指定 */
-  select, input, textarea {
-    width: 100% !important;
-    box-sizing: border-box !important;
+  /* 入力枠の高さを調整 */
+  select, input {
+    height: 48px !important;
     font-size: 16px !important;
   }
 
-  /* 縦書きになっていた要素（総合スコアなど）を横書きに戻す */
+  textarea {
+    min-height: 180px !important;
+  }
+
+  /* 観点別評価カード（下部）をスマホでは2×2で配置 */
+  .rubricGrid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* 縦書きなどを強制リセット */
   * {
     writing-mode: horizontal-tb !important;
   }
