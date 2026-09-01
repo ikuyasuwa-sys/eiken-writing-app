@@ -429,3 +429,49 @@ body::before {
     box-sizing: border-box !important;
   }
 }
+/* スマホ表示の個別調整 (幅768px以下) */
+@media screen and (max-width: 768px) {
+
+  /* クラス・出席番号・級の選択エリアを縦並びにする */
+  .select-group,
+  div[style*="grid-template-columns: repeat(3"],
+  div[style*="display: grid"] > div:has(select) {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  /* セレクトボックス（ドロップダウン）を押しやすい高さと全幅に設定 */
+  select, input {
+    width: 100% !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 総合スコアを横長カードとして独立した1行にする */
+  .score-card,
+  div:has(> *:contains("総合スコア")) {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 16px 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 総合スコア内の文字サイズ調整 */
+  .score-card h3,
+  .score-card div {
+    writing-mode: horizontal-tb !important; /* 縦書きを解除して横書きにする */
+    font-size: 18px !important;
+  }
+
+  /* チェック項目カードも独立した1行にする */
+  div:has(> *:contains("チェック項目")) {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
