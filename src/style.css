@@ -525,3 +525,51 @@ body::before {
     box-sizing: border-box !important;
   }
 }
+/* 画面幅768px以下のスマホ表示時のみ適用 */
+@media screen and (max-width: 768px) {
+
+  /* 1. PC用の2列レイアウト（layout / mainColumn / sideColumn）を強制的に1列縦並びにする */
+  .layout,
+  div[class*="layout"] {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  /* 2. 右側にあったサイドバー（チェック項目・総合スコア）をメイン領域の下にそのまま繋げる */
+  .sideColumn,
+  aside {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* 3. 「クラス」「出席番号」を横並び、「級」をその下に配置 */
+  .card.grid3,
+  div:has(> select) {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* 3つ目の要素（級の選択肢）だけ横幅いっぱいに伸ばす */
+  .card.grid3 > *:nth-child(3),
+  div:has(> select) > *:nth-child(3) {
+    grid-column: span 2 !important;
+  }
+
+  /* 4. 入力枠やボタンの押しやすさをスマホ向けに調整 */
+  select, input {
+    width: 100% !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 5. 総合スコアカードを縦書きではなく横長のカードにする */
+  .score-card,
+  div:has(> *:contains("総合スコア")) {
+    width: 100% !important;
+    writing-mode: horizontal-tb !important;
+  }
+}
