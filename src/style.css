@@ -475,3 +475,53 @@ body::before {
     box-sizing: border-box !important;
   }
 }
+/* スケッチに基づいた完全縦1列レイアウト (768px以下のスマホ表示) */
+@media screen and (max-width: 768px) {
+  /* 全体のコンテナを縦1列のFlexboxにし、順番をコントロール */
+  .container, 
+  main, 
+  div[style*="grid-template-columns"] {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 16px !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* クラス・出席番号を横並び、級をその下に配置 */
+  .student-info-section,
+  div:has(> select) {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important; /* クラスと出席番号で2列 */
+    gap: 10px !important;
+  }
+
+  /* 「級」の入力枠だけ幅いっぱいに伸ばして下に配置 */
+  .student-info-section > div:nth-child(3),
+  div:has(> select) > div:nth-child(3) {
+    grid-column: span 2 !important;
+  }
+
+  /* セレクトボックスと入力フィールドの高さ・見やすさを調整 */
+  select, input, textarea {
+    width: 100% !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  textarea {
+    height: 180px !important; /* 解答入力エリアの高さ */
+  }
+
+  /* 下部のカード（チェック項目・総合スコア）を横幅いっぱいの単独ブロックにする */
+  .card, 
+  .score-card,
+  div[class*="card"] {
+    width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
