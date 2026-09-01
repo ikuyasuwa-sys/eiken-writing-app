@@ -356,61 +356,92 @@ progress {
 }
 
 /* ==========================================
-   スマホ表示（幅768px以下）：スケッチ通りの完全1列化
+   スマホ表示（幅768px以下）：横幅拡大＆英文可読性向上
    ========================================== */
 @media screen and (max-width: 768px) {
-  /* 全体の余白・スクロール調整 */
-  html, body, #root, .app {
+  /* 1. 全体の左右余白を最少にして表示幅を最大化 */
+  html, body, #root {
     overflow-x: hidden !important;
     width: 100% !important;
-    padding: 12px !important;
     margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* 2列（メイン・サイド）を解体して1列に接続 */
-  .layout {
-    display: flex !important;
-    flex-direction: column !important;
+  .app {
+    padding: 8px !important; /* 外枠余白を8pxまで削減 */
     width: 100% !important;
-    gap: 16px !important;
+    max-width: 100% !important;
   }
 
+  /* 2. 各カードの内側余白を削ってコンテンツ幅を確保 */
+  .card, 
+  .hero, 
+  .problemBox, 
+  .scoreCard {
+    padding: 12px 14px !important;
+    border-radius: 18px !important;
+  }
+
+  /* 3. レイアウト列の余白調整 */
+  .layout,
   .mainColumn,
   .sideColumn {
     width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 12px !important;
   }
 
-  /* クラス・出席番号を横並び(2列)、級をその下に全幅配置 */
+  /* 4. クラス・出席番号（2列）、級（全幅） */
   .grid3 {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
+    gap: 8px !important;
   }
 
   .grid3 > *:nth-child(3) {
     grid-column: span 2 !important;
   }
 
-  /* 入力枠の高さを調整 */
   select, input {
-    height: 48px !important;
-    font-size: 16px !important;
+    height: 44px !important;
+    font-size: 15px !important;
+    padding: 8px 10px !important;
+  }
+
+  /* 5. 英文・クエスチョン文章の文字サイズと折り返し最適化 */
+  .question {
+    font-size: 16px !important; /* 英文タイトル/指示文を適切な大きさに縮小 */
+    line-height: 1.4 !important;
+    word-break: break-word !important;
+  }
+
+  .prompt, 
+  .model, 
+  .problemBox p {
+    font-size: 14px !important; /* E-mail本文などのフォントサイズを14pxに設定 */
+    line-height: 1.5 !important;
+    padding: 10px !important;
   }
 
   textarea {
-    min-height: 180px !important;
+    min-height: 160px !important;
+    padding: 10px !important;
+    font-size: 15px !important;
   }
 
-  /* 観点別評価カード（下部）をスマホでは2×2で配置 */
+  /* 6. 観点別評価カード（2列×2行） */
   .rubricGrid {
+    display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
+    gap: 8px !important;
   }
 
-  /* 縦書きなどを強制リセット */
+  .rubricCard {
+    padding: 10px !important;
+  }
+
+  /* 縦書き等のリセット */
   * {
     writing-mode: horizontal-tb !important;
   }
